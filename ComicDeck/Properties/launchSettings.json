@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ComicDeck (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ComicDeck (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
