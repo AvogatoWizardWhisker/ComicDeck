@@ -72,4 +72,5 @@ ComicDeck/
 └── ComicDeck.Tests/
     ├── ArchiveReaderTests.cs
     ├── LibraryServiceTests.cs
-    └── ThumbnailCacheTests.cs```
+    └── ThumbnailCacheTests.cs
+```
