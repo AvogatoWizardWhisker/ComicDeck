@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ComicDeck.Tests (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ComicDeck.Tests (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

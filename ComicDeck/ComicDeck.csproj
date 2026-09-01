@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
@@ -14,6 +14,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="ComicDeck.Tests\**" />
+    <EmbeddedResource Remove="ComicDeck.Tests\**" />
+    <None Remove="ComicDeck.Tests\**" />
+    <Page Remove="ComicDeck.Tests\**" />
+  </ItemGroup>
   <ItemGroup>
     <None Remove="Controls\PageFlipView.xaml" />
     <None Remove="Controls\ThumbnailGridItem.xaml" />
@@ -65,14 +71,16 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.11" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.11" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.11" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2526" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2705" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.4.0" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools.WinApp" Version="0.6.1" />
     <PackageReference Include="SharpCompress" Version="0.50.4" />
+    <PackageReference Include="SkiaSharp" Version="4.151.1" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ComicDeck.Tests\" />
-  </ItemGroup>
+	<ItemGroup>
+    <ProjectReference Include="..\ComicDeck.Core\ComicDeck.Core.csproj" />
+	<ProjectReference Include="..\ComicDeck.Services\ComicDeck.Services.csproj" />
+	</ItemGroup>
   <ItemGroup>
     <Page Update="Controls\ThumbnailGridItem.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -89,7 +97,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="Views\ComicDetailPage.xaml">
+    <Page Update="Views\ComicDetailsPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -120,4 +128,7 @@
     <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
     <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">True</PublishTrimmed>
   </PropertyGroup>
+  <ItemGroup>
+    <PRIResource Remove="ComicDeck.Tests\**" />
+  </ItemGroup>
 </Project>

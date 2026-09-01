@@ -4,6 +4,14 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="ComicDeck.Core/ComicDeck.Core.csproj" Id="28e55693-a895-4a77-8c1a-739dd475625f" />
+  <Project Path="ComicDeck.Services/ComicDeck.Services.csproj" Id="0701e4c5-86ce-4eae-985c-786022815bc9" />
+  <Project Path="ComicDeck.Tests/ComicDeck.Tests.csproj" Id="5fb814c1-d197-4339-940d-8380eb28e755">
+    <Platform Solution="*|ARM64" Project="ARM64" />
+    <Platform Solution="*|x64" Project="x64" />
+    <Platform Solution="*|x86" Project="x86" />
+    <Deploy />
+  </Project>
   <Project Path="ComicDeck/ComicDeck.csproj">
     <Platform Solution="*|ARM64" Project="ARM64" />
     <Platform Solution="*|x64" Project="x64" />
