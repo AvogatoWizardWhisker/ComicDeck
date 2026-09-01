@@ -1,5 +1,5 @@
 # ComicDeck
-A simple comic book reader app build with WinUI 3
+A simple comic book reader app (.cbz, .cbr). built with WinUI 3
 
 ## Project Structure
 ```
