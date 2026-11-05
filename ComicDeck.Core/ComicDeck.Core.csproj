@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="Metadate\" />
+    <Folder Include="Library\" />
+  </ItemGroup>
+
 </Project>
