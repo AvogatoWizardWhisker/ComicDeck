@@ -22,7 +22,7 @@ namespace ComicDeck.Core.Models
         /// </summary>
         public void UpdatePage(int pageIndex, int pageCount, DateTime nowUtc)
         {
-            if (pageIndex <= 0) return;
+            if (pageCount <= 0) return;
 
             CurrentPage = Math.Clamp(pageIndex, 0, pageCount - 1);
             LastReadUtc = nowUtc;
