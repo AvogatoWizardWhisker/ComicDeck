@@ -1,11 +1,10 @@
 # ComicDeck
 
-# ComicDeck
-
 ComicDeck is a modern Windows comic book reader built with WinUI. It aims to provide a clean, fast, and native reading experience for comic archives while automatically extracting and organizing comic metadata.
 
-> ⚠️ **Work in Progress**
->
+> [!Note]
+> **Work in Progress**
+> 
 > ComicDeck is currently under active development. Features, architecture, file formats, and user experience may change significantly between releases. Expect incomplete functionality, bugs, and breaking changes while development continues.
 
 ## Features
