@@ -44,10 +44,10 @@ namespace ComicDeck.Core.Tests
             var path = CreateZip(("a1.jpg", "first"), ("a2.jpg", "second"));
             using var archive = ZipComicArchive.Open(path);
 
-            await using var stream = await archive.OpenPageAsync(1);
+            await using var stream = await archive.OpenPageAsync(1, TestContext.Current.CancellationToken);
             using var reader = new StreamReader(stream);
 
-            Assert.Equal("second", await reader.ReadToEndAsync());
+            Assert.Equal("second", await reader.ReadToEndAsync(TestContext.Current.CancellationToken));
         }
 
         [Fact]
@@ -57,8 +57,8 @@ namespace ComicDeck.Core.Tests
                 ("p1.jpg", "x"), ("ComicInfo.xml", "<ComicInfo/>"));
             using var archive = ZipComicArchive.Open(path);
 
-            Assert.NotNull(await archive.OpenEntryAsync("ComicInfo.xml"));
-            Assert.Null(await archive.OpenEntryAsync("missing.xml"));
+            Assert.NotNull(await archive.OpenEntryAsync("ComicInfo.xml", TestContext.Current.CancellationToken));
+            Assert.Null(await archive.OpenEntryAsync("missing.xml", TestContext.Current.CancellationToken));
         }
 
         [Fact]

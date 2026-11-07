@@ -35,7 +35,7 @@ public sealed class MetadataServiceTests : IDisposable
             ("ComicInfo.xml", "<ComicInfo><Series>Detective</Series><Number>3</Number><PageCount>99</PageCount></ComicInfo>"));
 
         using var archive = ZipComicArchive.Open(path);
-        var m = await new MetadataService().ReadAsync(archive);
+        var m = await new MetadataService().ReadAsync(archive, TestContext.Current.CancellationToken);
 
         Assert.Equal("Detective", m.Series);   // from XML, not the file name
         Assert.Equal("3", m.Number);
@@ -49,7 +49,7 @@ public sealed class MetadataServiceTests : IDisposable
         var path = CreateZip("Saga 007 (2012).cbz", ("p1.jpg", "x"));
 
         using var archive = ZipComicArchive.Open(path);
-        var m = await new MetadataService().ReadAsync(archive);
+        var m = await new MetadataService().ReadAsync(archive, TestContext.Current.CancellationToken);
 
         Assert.Equal("Saga", m.Series);
         Assert.Equal("7", m.Number);
@@ -62,7 +62,7 @@ public sealed class MetadataServiceTests : IDisposable
         var path = CreateZip("Saga 007.cbz", ("p1.jpg", "x"), ("ComicInfo.xml", "<ComicInfo><oops"));
 
         using var archive = ZipComicArchive.Open(path);
-        var m = await new MetadataService().ReadAsync(archive);
+        var m = await new MetadataService().ReadAsync(archive, TestContext.Current.CancellationToken);
 
         Assert.Equal("Saga", m.Series);
     }

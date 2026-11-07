@@ -51,7 +51,7 @@ namespace ComicDeck.Core.Tests
             CreateCbz(Path.Combine("Indie", "Saga 002.cbz"));
             File.WriteAllText(Path.Combine(_root, "notes.txt"), "ignore me");
 
-            var result = await _scanner.ScanAsync(_root);
+            var result = await _scanner.ScanAsync(_root, cancellationToken: TestContext.Current.CancellationToken);
 
             Assert.Equal(2, result.Added);
             Assert.Empty(result.Failures);
@@ -70,8 +70,8 @@ namespace ComicDeck.Core.Tests
             CreateCbz("Batman 001.cbz");
             CreateCbz("Batman 002.cbz");
 
-            await _scanner.ScanAsync(_root);
-            var result = await _scanner.ScanAsync(_root);
+            await _scanner.ScanAsync(_root, cancellationToken: TestContext.Current.CancellationToken);
+            var result = await _scanner.ScanAsync(_root, cancellationToken: TestContext.Current.CancellationToken);
 
             Assert.Equal(0, result.Added);
             Assert.Equal(0, result.Updated);
@@ -82,14 +82,14 @@ namespace ComicDeck.Core.Tests
         public async Task Changed_file_is_updated_and_keeps_user_stale()
         {
             CreateCbz("Batman 001.cbz", pages: 2);
-            await _scanner.ScanAsync(_root);
+            await _scanner.ScanAsync(_root, cancellationToken: TestContext.Current.CancellationToken);
 
             var comic = _repo.Comics.Single();
             var id = comic.Id;
             comic.IsFavorite = true;
 
             CreateCbz("Batman 001.cbz", pages: 3);
-            var result = await _scanner.ScanAsync(_root);
+            var result = await _scanner.ScanAsync(_root, cancellationToken: TestContext.Current.CancellationToken);
 
             Assert.Equal(1, result.Updated);
             Assert.Equal(0, result.Added);
@@ -104,10 +104,10 @@ namespace ComicDeck.Core.Tests
         {
             var path = CreateCbz("Batman 001.cbz");
             CreateCbz("Batman 002.cbz");
-            await _scanner.ScanAsync(_root);
+            await _scanner.ScanAsync(_root, cancellationToken: TestContext.Current.CancellationToken);
 
             File.Delete(path);
-            var result = await _scanner.ScanAsync(_root);
+            var result = await _scanner.ScanAsync(_root, cancellationToken: TestContext.Current.CancellationToken);
 
             Assert.Equal(1, result.Removed);
             Assert.Single(_repo.Comics);
@@ -119,7 +119,7 @@ namespace ComicDeck.Core.Tests
             File.WriteAllText(Path.Combine(_root, "bad.cbz"), "not a zip");
             CreateCbz("Good 001.cbz");
 
-            var result = await _scanner.ScanAsync(_root);
+            var result = await _scanner.ScanAsync(_root, cancellationToken: TestContext.Current.CancellationToken);
 
             Assert.Equal(1, result.Added);
             var failure = Assert.Single(result.Failures);
@@ -130,10 +130,10 @@ namespace ComicDeck.Core.Tests
         public async Task Missing_folder_throws_and_removes_nothing()
         {
             CreateCbz("Batman 001.cbz");
-            await _scanner.ScanAsync(_root);
+            await _scanner.ScanAsync(_root, cancellationToken: TestContext.Current.CancellationToken);
 
             await Assert.ThrowsAsync<DirectoryNotFoundException>(
-                () => _scanner.ScanAsync(Path.Combine(_root, "nope")));
+                () => _scanner.ScanAsync(Path.Combine(_root, "nope"), cancellationToken: TestContext.Current.CancellationToken));
 
             Assert.Single(_repo.Comics);
         }
@@ -145,7 +145,7 @@ namespace ComicDeck.Core.Tests
             CreateCbz("Batman 002.cbz");
             var reports = new List<ScanProgress>();
 
-            await _scanner.ScanAsync(_root, new SyncProgress<ScanProgress>(reports.Add));
+            await _scanner.ScanAsync(_root, new SyncProgress<ScanProgress>(reports.Add), TestContext.Current.CancellationToken);
 
             Assert.Equal(2, reports.Count);
             Assert.Equal(2, reports[^1].Processed);
