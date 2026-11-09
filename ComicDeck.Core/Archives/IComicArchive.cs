@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ComicDeck.Core.Archives
 {
-    public sealed record ComicPage(int index, string EntryName, long Size /*DateTimeOffset? LastModified*/);
+    public sealed record ComicPage(int Index, string EntryName, long Size /*DateTimeOffset? LastModified*/);
 
     public interface IComicArchive : IDisposable
     {

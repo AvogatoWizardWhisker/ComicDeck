@@ -45,13 +45,12 @@ namespace ComicDeck.Core.Tests
         }
 
         [Fact]
-        public void Rar_is_reported_as_unsupported_for_now()
+        public void Truncated_rar_throws_ArchiveException()
         {
             var path = Path.Combine(_dir, "a.cbr");
             File.WriteAllBytes(path, new byte[] { 0x52, 0x61, 0x72, 0x21, 0x1A, 0x07, 0x00, 0x00 });
 
-            var ex = Assert.Throws<ArchiveException>(() => new ComicArchiveFactory().Open(path));
-            Assert.Equal(ArchiveErrorKind.Unsupported, ex.Kind);
+            Assert.Throws<ArchiveException>(() => new ComicArchiveFactory().Open(path));
         }
 
         [Fact]

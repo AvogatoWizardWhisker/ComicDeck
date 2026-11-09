@@ -19,7 +19,7 @@ namespace ComicDeck.Core.Archives
                 ArchiveFormat.Zip => ZipComicArchive.Open(filePath),
 
                 ArchiveFormat.Rar or ArchiveFormat.SevenZip or ArchiveFormat.Tar =>
-                throw new ArchiveException(ArchiveErrorKind.Unsupported, $"{format} archive aren't supported yet."),
+                SharpCompressComicArchive.Open(filePath, format),
 
                 _ => throw new ArchiveException(ArchiveErrorKind.Unsupported, $"Not recongnised comic archive format.")
             };
