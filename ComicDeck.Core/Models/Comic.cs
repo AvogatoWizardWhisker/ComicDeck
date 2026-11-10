@@ -11,7 +11,7 @@ namespace ComicDeck.Core.Models
         // file identity and change detection
         public string FilePath { get; set; } = string.Empty;
         public long FileSize { get; set; }
-        public DateTime FileLastModifiedUtc { get; set; }
+        public DateTime FileModifiedUtc { get; set; }
         public ArchiveFormat Format { get; set; }
 
         // descriptive fields (copied from ComicMetadata or the file name)
