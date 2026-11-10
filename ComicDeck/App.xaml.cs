@@ -4,36 +4,58 @@ using Microsoft.UI.Xaml.Data;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
+using ComicDeck.Core.Archives;
+using ComicDeck.Core.Data;
+using ComicDeck.Core.Library;
+using ComicDeck.Core.Metadata;
+using ComicDeck.Services;
+using ComicDeck.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ComicDeck
 {
-    /// <summary>
-    /// Provides application-specific behavior to supplement the default Application class.
-    /// </summary>
     public partial class App : Application
     {
         private Window? _window;
 
-        /// <summary>
-        /// Initializes the singleton application object.  This is the first line of authored code
-        /// executed, and as such is the logical equivalent of main() or WinMain().
-        /// </summary>
+        public static IServiceProvider Services { get; private set; } = null!;
+
+        public static T GetService<T>() where T : notnull => Services.GetRequiredService<T>();
+
         public App()
         {
             InitializeComponent();
         }
 
-        /// <summary>
-        /// Invoked when the application is launched.
-        /// </summary>
-        /// <param name="args">Details about the launch request and process.</param>
-        protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
+        protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
+            // opening the database takes a few milliseconds, and pages need it as soon as they load
+            var database = await ComicDatabase.OpenAsync(AppPaths.DatabasePath);
+            Services = ConfigureServices(database);
+
             _window = new MainWindow();
+            _window.Closed += async (_, _) => await database.DisposeAsync();
             _window.Activate();
+        }
+
+        private static IServiceProvider ConfigureServices(ComicDatabase database)
+        {
+            var services = new ServiceCollection();
+
+            // Core
+            services.AddSingleton(database);
+            services.AddSingleton<IComicRepository, SqliteComicRepository>();
+            services.AddSingleton<ILibraryFolderRepository, SqliteLibraryFolderRepository>();
+            services.AddSingleton<IComicArchiveFactory, ComicArchiveFactory>();
+            services.AddSingleton<IMetadataService, MetadataService>();
+            services.AddSingleton(TimeProvider.System);
+            services.AddSingleton<LibraryScanner, LibraryScanner>();
+            
+            // ViewModels : one per page, created each time the page is opened
+            services.AddTransient<HomeViewModel>();
+
+            return services.BuildServiceProvider();
+
         }
     }
 }
