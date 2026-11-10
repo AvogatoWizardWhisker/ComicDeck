@@ -102,7 +102,7 @@ namespace ComicDeck.Core.Library
 
             if (existing is not null
                 && existing.FileSize == size
-                && (existing.FileLastModifiedUtc - modifiedUtc).Duration() <= TimestampTolerance)
+                && (existing.FileModifiedUtc - modifiedUtc).Duration() <= TimestampTolerance)
             {
                 return FileOutcome.Unchanged;
             }
@@ -121,7 +121,7 @@ namespace ComicDeck.Core.Library
 
             comic.FilePath = file;
             comic.FileSize = size;
-            comic.FileLastModifiedUtc = modifiedUtc;
+            comic.FileModifiedUtc = modifiedUtc;
             comic.Format = format;
 
             comic.Title = metadata.Title;

@@ -41,7 +41,7 @@ namespace ComicDeck.Core.Tests
 
             foreach (var page in archive.Pages)
             {
-                await using var stream = await archive.OpenPageAsync(page.Index);
+                await using var stream = await archive.OpenPageAsync(page.Index, TestContext.Current.CancellationToken);
                 Assert.True(stream.CanSeek);
                 Assert.True(stream.Length > 0, $"{page.EntryName} came back empty");
             }
@@ -67,7 +67,7 @@ namespace ComicDeck.Core.Tests
         {
             using var archive = new ComicArchiveFactory().Open(Fixture(fixture));
 
-            await using var stream = await archive.OpenEntryAsync("ComicInfo.xml");
+            await using var stream = await archive.OpenEntryAsync("ComicInfo.xml", TestContext.Current.CancellationToken);
 
             Assert.Equal(hasComicInfo, stream is not null);
         }
@@ -77,7 +77,7 @@ namespace ComicDeck.Core.Tests
         {
             using var archive = new ComicArchiveFactory().Open(Fixture("sample.cbr"));
 
-            var m = await new MetadataService().ReadAsync(archive);
+            var m = await new MetadataService().ReadAsync(archive, TestContext.Current.CancellationToken);
 
             Assert.Equal("Fixture Series", m.Series); // from the xml content suggested
             Assert.Equal(archive.Pages.Count, m.PageCount);
@@ -91,7 +91,7 @@ namespace ComicDeck.Core.Tests
 
             using (var archive = new ComicArchiveFactory().Open(Fixture("sample-solid.cbr")))
             {
-                await using var stream = await archive.OpenPageAsync(archive.Pages.Count - 1);
+                await using var stream = await archive.OpenPageAsync(archive.Pages.Count - 1, TestContext.Current.CancellationToken);
             }
                 
 
