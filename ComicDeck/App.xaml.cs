@@ -34,6 +34,7 @@ namespace ComicDeck
             Services = ConfigureServices(database);
 
             _window = new MainWindow();
+            CurrentWindow = _window;
             _window.Closed += async (_, _) => await database.DisposeAsync();
             _window.Activate();
         }
@@ -51,6 +52,7 @@ namespace ComicDeck
             services.AddSingleton(TimeProvider.System);
             services.AddSingleton<LibraryScanner, LibraryScanner>();
             services.AddSingleton<PageImageLoader>();
+            services.AddTransient<ReaderViewModel>();
             
             // ViewModels : one per page, created each time the page is opened
             services.AddTransient<HomeViewModel>();
@@ -58,5 +60,8 @@ namespace ComicDeck
             return services.BuildServiceProvider();
 
         }
+
+        public static Window CurrentWindow { get; private set; } = null!;
     }
+
 }
