@@ -13,9 +13,8 @@ namespace ComicDeck.Pages
         public HomePage()
         {
             InitializeComponent();
-            // TEMPORARY SMOKE TEST: delete before commit
-            //Loaded += async (_, _) => await ViewModel.LoadAsync();
-            Loaded += async (_, _) =>
+            Loaded += async (_, _) => await ViewModel.LoadAsync();
+            /*Loaded += async (_, _) =>
             {
                 await ViewModel.LoadAsync();
 
@@ -24,7 +23,7 @@ namespace ComicDeck.Pages
 
                 ViewModel.Status = $"Page 1: natural {page.NaturalWidth}x{page.NaturalHeight}, " +
                                    $"decoded {page.Image.PixelWidth}x{page.Image.PixelHeight}";
-            };
+            };*/
         }
     }
 }
