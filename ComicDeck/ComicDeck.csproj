@@ -14,6 +14,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Pages\ReaderPage.xaml" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -57,6 +60,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ComicDeck.Core\ComicDeck.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\ReaderPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <!--

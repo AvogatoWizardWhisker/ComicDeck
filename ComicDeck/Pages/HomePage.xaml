@@ -14,6 +14,9 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Home" />
-        <TextBlock Grid.Row="1" Text="{x:Bind ViewModel.Status, Mode=OneWay}"/>
+        <StackPanel Grid.Row="1" Spacing="16">
+            <TextBlock Text="{x:Bind ViewModel.Status, Mode=OneWay}"/>
+            <Button Content="Open comic..." Click="OpenComic_Click"/>
+        </StackPanel>
     </Grid>
 </Page>
