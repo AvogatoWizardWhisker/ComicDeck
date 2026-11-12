@@ -26,5 +26,8 @@ namespace ComicDeck.Core.Library
 
         /// <summary>Inserts the progress when <c>Id == 0</c>, otherwise updates it.</summary>
         Task SaveProgressAsync(ReadingProgress progress, CancellationToken cancellationToken = default);
+
+        ///<summary>Every comic with its series name and reading state, for the library grid.</summary>
+        Task<IReadOnlyList<ComicListItem>> GetLibraryItemsAsync(CancellationToken cancellationToken = default);
     }
 }

@@ -106,5 +106,20 @@ namespace ComicDeck.Core.Data
             else
                 await _db.UpdateAsync(progress);
         }
+
+        public async Task<IReadOnlyList<ComicListItem>> GetLibraryItemsAsync(CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return await _db.QueryAsync<ComicListItem>(
+                """
+                SELECT c.Id, c.FilePath, c.Title, s.Name AS SeriesName, c.Number, c.PageCount, c.FileSize, c.FileModifiedUtc, c.IsFavorite,
+                COALESCE(p.CurrentPage, 0) AS CurrentPage,
+                COALESCE(p.Status, 0) AS Status
+                From Comic c
+                LEFT JOIN Series s ON s.Id = c.SeriesId
+                LEFT JOIN ReadingProgress p ON p.ComicId = c.Id
+                """);
+        }
     }
 }

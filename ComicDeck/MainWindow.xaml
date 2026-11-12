@@ -45,9 +45,9 @@
                         <FontIcon Glyph="&#xE80F;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="About" Tag="about">
+                <NavigationViewItem Content="Library" Tag="library">
                     <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xEA3A;" />
+                        <FontIcon Glyph="&#xE8F1;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>

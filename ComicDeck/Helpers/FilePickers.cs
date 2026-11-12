@@ -22,5 +22,15 @@ namespace ComicDeck.Helpers
             var file = await picker.PickSingleFileAsync();
             return file?.Path;
         }
+
+        public static async Task<string?> PickFolderAsync()
+        {
+            var picker = new FolderPicker();
+            InitializeWithWindow.Initialize(picker, WindowNative.GetWindowHandle(App.CurrentWindow));
+            picker.FileTypeFilter.Add("*");
+
+            var folder = await picker.PickSingleFolderAsync();
+            return folder?.Path;
+        }
     }
 }

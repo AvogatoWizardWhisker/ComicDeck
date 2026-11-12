@@ -80,4 +80,28 @@ internal sealed class FakeComicRepository : IComicRepository
         }
         return Task.CompletedTask;
     }
+
+    public Task<IReadOnlyList<ComicListItem>> GetLibraryItemsAsync(CancellationToken ct = default)
+    {
+        IReadOnlyList<ComicListItem> items = Comics.Select(c =>
+        {
+            var series = SeriesList.FirstOrDefault(s => s.Id == c.SeriesId);
+            var progress = ProgressRows.FirstOrDefault(p => p.ComicId == c.Id);
+            return new ComicListItem
+            {
+                Id = c.Id,
+                FilePath = c.FilePath,
+                Title = c.Title,
+                SeriesName = series?.Name,
+                Number = c.Number,
+                PageCount = c.PageCount,
+                FileSize = c.FileSize,
+                FileModifiedUtc = c.FileModifiedUtc,
+                IsFavorite = c.IsFavorite,
+                CurrentPage = progress?.CurrentPage ?? 0,
+                Status = progress?.Status ?? ReadStatus.Unread
+            };
+        }).ToList();
+        return Task.FromResult(items);
+    }
 }

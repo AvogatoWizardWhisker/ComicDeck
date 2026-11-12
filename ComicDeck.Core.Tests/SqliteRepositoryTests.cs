@@ -200,5 +200,37 @@ public sealed class SqliteRepositoryTests : IAsyncLifetime
         Assert.Equal(0, second.Updated);
     }
 
+    [Fact]
+    public async Task Library_items_joins_series_and_progress()
+    {
+        var series = await _repo.GetOrCreateSeriesAsync("Batman", "DC", 2016, TestContext.Current.CancellationToken);
+        var withSeries = NewComic(@"D:\Comics\Batman 001.cbz");
+        withSeries.SeriesId = series.Id;
+        withSeries.Number = "1";
+        var standalone = NewComic(@"D:\Comics\Standalone.cbz");
+        standalone.Title = "Watchmen";
+        await _repo.SaveComicAsync(withSeries, TestContext.Current.CancellationToken);
+        await _repo.SaveComicAsync(standalone, TestContext.Current.CancellationToken);
+
+        var progress = new ReadingProgress { ComicId = withSeries.Id };
+        progress.UpdatePage(5, 20, DateTime.UtcNow);
+        await _repo.SaveProgressAsync(progress, TestContext.Current.CancellationToken);
+
+        var items = await _repo.GetLibraryItemsAsync(TestContext.Current.CancellationToken);
+
+        var a = items.Single(i => i.Id == withSeries.Id);
+        Assert.Equal("Batman", a.SeriesName);
+        Assert.Equal("1", a.Number);
+        Assert.Equal(5, a.CurrentPage);
+        Assert.Equal(ReadStatus.InProgress, a.Status);
+        Assert.Equal("Batman 001", a.DisplayTitle);
+
+        var b = items.Single(i => i.Id == standalone.Id);
+        Assert.Null(b.SeriesName);
+        Assert.Equal(ReadStatus.Unread, b.Status);
+        Assert.Equal(0, b.CurrentPage);
+        Assert.Equal("Watchmen", b.DisplayTitle);
+    }
+
 }
 
