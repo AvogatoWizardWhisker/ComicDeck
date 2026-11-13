@@ -43,8 +43,8 @@ namespace ComicDeck
                     case "home":
                         NavFrame.Navigate(typeof(HomePage));
                         break;
-                    case "about":
-                        NavFrame.Navigate(typeof(AboutPage));
+                    case "library":
+                        NavFrame.Navigate(typeof(LibraryPage));
                         break;
                     default:
                         throw new InvalidOperationException($"Unknown navigation item tag: {item.Tag}");

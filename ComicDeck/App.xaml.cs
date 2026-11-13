@@ -51,11 +51,17 @@ namespace ComicDeck
             services.AddSingleton<IMetadataService, MetadataService>();
             services.AddSingleton(TimeProvider.System);
             services.AddSingleton<LibraryScanner, LibraryScanner>();
+
+            //App services
             services.AddSingleton<PageImageLoader>();
-            services.AddTransient<ReaderViewModel>();
+            services.AddSingleton<CoverThumbnailService>();
+            
             
             // ViewModels : one per page, created each time the page is opened
             services.AddTransient<HomeViewModel>();
+            services.AddTransient<ReaderViewModel>();
+            services.AddTransient<LibraryViewModel>();
+            services.AddSingleton<ILibraryScanner, LibraryScanner>();
 
             return services.BuildServiceProvider();
 

@@ -15,6 +15,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Pages\LibraryPage.xaml" />
     <None Remove="Pages\ReaderPage.xaml" />
   </ItemGroup>
 
@@ -60,6 +61,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ComicDeck.Core\ComicDeck.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\LibraryPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\ReaderPage.xaml">

@@ -26,18 +26,18 @@ namespace ComicDeck.ViewModels
             _loader = loader;
         }
 
-        [ObservableProperty] private string _title = string.Empty;
-        [ObservableProperty] private ImageSource? _currentImage;
-        [ObservableProperty] private bool _isLoading;
+        [ObservableProperty] public partial string Title { get; set; } = string.Empty;
+        [ObservableProperty] public partial ImageSource? CurrentImage { get; set; }
+        [ObservableProperty] public partial bool IsLoading { get; set; }
 
         [ObservableProperty, NotifyPropertyChangedFor(nameof(PageText))]
-        private int _currentIndex;
+        public partial int CurrentIndex { get; set; }
 
         [ObservableProperty, NotifyPropertyChangedFor(nameof(PageText))]
-        private int _pageCount;
+        public partial int PageCount { get; set; }
 
         [ObservableProperty, NotifyPropertyChangedFor(nameof(PageText))]
-        private string? _errorMessage;
+        public partial string? ErrorMessage { get; set; }
 
         public bool HasError => ErrorMessage is not null;
         public string PageText => PageCount == 0 ? string.Empty : $"{CurrentIndex + 1} / {PageCount}";
