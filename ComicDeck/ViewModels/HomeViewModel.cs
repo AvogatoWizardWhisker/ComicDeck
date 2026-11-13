@@ -12,7 +12,7 @@ namespace ComicDeck.ViewModels
         public HomeViewModel(ILibraryFolderRepository folders) => _folders = folders;
 
         [ObservableProperty]
-        private string _status = "Starting...";
+        public partial string Status { get; set; } = "Starting...";
 
         public async Task LoadAsync()
         {

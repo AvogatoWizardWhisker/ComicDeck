@@ -26,14 +26,14 @@ namespace ComicDeck.ViewModels
         }
 
         [ObservableProperty, NotifyPropertyChangedFor(nameof(ShowEmptyHint))]
-        private IReadOnlyList<ComicItemViewModel> _items = Array.Empty<ComicItemViewModel>();
+        public partial IReadOnlyList<ComicItemViewModel> Items { get; set; } = Array.Empty<ComicItemViewModel>();
 
         [ObservableProperty, NotifyPropertyChangedFor(nameof(IsIdle), nameof(ShowEmptyHint))]
-        private bool _isScanning;
+        public partial bool IsScanning { get; set; }
 
-        [ObservableProperty] private string _status = string.Empty;
-        [ObservableProperty] private double _scanMaximum = 1;
-        [ObservableProperty] private double _scanValue;
+        [ObservableProperty] public partial string Status { get; set; } = string.Empty;
+        [ObservableProperty] public partial double ScanMaximum { get; set; } = 1;
+        [ObservableProperty] public partial double ScanValue { get; set; }
 
         public bool IsIdle => !IsScanning;
         public bool ShowEmptyHint => Items.Count == 0 && !IsScanning;

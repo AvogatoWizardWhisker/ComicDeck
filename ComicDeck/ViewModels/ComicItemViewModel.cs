@@ -34,7 +34,7 @@ namespace ComicDeck.ViewModels
         public double ProgressPercent => _item.PageCount > 1 ? 100.0 * _item.CurrentPage / (_item.PageCount - 1) : 0;
 
         [ObservableProperty]
-        private ImageSource? _cover;
+        public partial ImageSource? Cover { get; set; }
 
         public async Task LoadCoverAsync()
         {
