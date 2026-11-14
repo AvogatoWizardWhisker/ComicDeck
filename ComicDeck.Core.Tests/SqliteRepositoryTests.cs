@@ -232,5 +232,35 @@ public sealed class SqliteRepositoryTests : IAsyncLifetime
         Assert.Equal("Watchmen", b.DisplayTitle);
     }
 
+    [Fact]
+    public async Task Continue_reading_lists_in_progress_comics_most_recent_first()
+    {
+        var older = NewComic(@"D:\Comics\older.cbz");
+        var newer = NewComic(@"D:\Comics\newer.cbz");
+        var finished = NewComic(@"D:\Comics\finished.cbz");
+        var untouched = NewComic(@"D:\Comics\untouched.cbz");
+        foreach (var c in new[] { older, newer, finished, untouched }) 
+            await _repo.SaveComicAsync(c);
+
+        var t = new DateTime(2026, 11, 5, 12, 0, 0, DateTimeKind.Utc);
+
+        async Task ReadAsync(Comic comic, int page, DateTime at)
+        {
+            var p = new ReadingProgress { ComicId = comic.Id };
+            p.UpdatePage(page, 20, at);
+            await _repo.SaveProgressAsync(p);
+        }
+
+        await ReadAsync(older, 5, t);
+        await ReadAsync(newer, 5, t.AddHours(1));
+        await ReadAsync(finished, 19, t.AddHours(2)); // last page = completed, so excluded
+
+        var result = await _repo.GetContinueReadingAsync(10);
+
+        Assert.Equal(new[] { newer.Id, older.Id }, result.Select(r => r.Id));
+        Assert.Single(await _repo.GetContinueReadingAsync(1));
+
+    }
+
 }
 

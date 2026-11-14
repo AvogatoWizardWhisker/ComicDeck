@@ -4,19 +4,69 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="using:ComicDeck.Pages"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    xmlns:vm="using:ComicDeck.ViewModels"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006">
 
-    <Grid Padding="24,16,24,16" RowSpacing="24">
+    <Grid Padding="24,16,24,16" RowSpacing="16">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Home" />
-        <StackPanel Grid.Row="1" Spacing="16">
-            <TextBlock Text="{x:Bind ViewModel.Status, Mode=OneWay}"/>
+
+        <StackPanel Orientation="Horizontal" Spacing="12">
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Home" VerticalAlignment="Center"/>
             <Button Content="Open comic..." Click="OpenComic_Click"/>
         </StackPanel>
+        
+        <TextBlock Grid.Row="1" Style="{StaticResource TitleTextBlockStyle}" Text="Continue reading" 
+                   Visibility="{x:Bind ViewModel.HasContinueReading, Mode=OneWay}"/>
+
+        <ListView
+            x:Name="ContinueList"
+            Grid.Row="2"
+            ItemsSource="{x:Bind ViewModel.ContinueReading, Mode=OneWay}"
+            SelectionMode="None"
+            IsItemClickEnabled="True"
+            ItemClick="ContinueList_ItemClick"
+            ContainerContentChanging="ContinueList_ContainerContentChanging"
+            ScrollViewer.HorizontalScrollMode="Enabled"
+            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+            ScrollViewer.VerticalScrollMode="Disabled"
+            ScrollViewer.VerticalScrollBarVisibility="Hidden"
+            Visibility="{x:Bind ViewModel.HasContinueReading, Mode=OneWay}">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsStackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="vm:ComicItemViewModel">
+                    <StackPanel Width="160" Margin="4" Spacing="6">
+                        <Border Width="160" Height="240" CornerRadius="4"
+                                Background="{ThemeResource LayerFillColorDefaultBrush}">
+                            <Grid>
+                                <Image Source="{x:Bind Cover, Mode=OneWay}" Stretch="Uniform"/>
+                                <ProgressBar VerticalAlignment="Bottom" Maximum="100"
+                                             Value="{x:Bind ProgressPercent, Mode=OneWay}"
+                                             Visibility="{x:Bind ShowProgress, Mode=OneWay}"/>
+                            </Grid>
+                        </Border>
+                        <TextBlock Height="40" MaxLines="2" TextWrapping="Wrap"
+                                   TextTrimming="CharacterEllipsis"
+                                   Style="{StaticResource BodyStrongTextBlockStyle}"
+                                   Text="{x:Bind Title}"/>
+                        <TextBlock Height="18" TextTrimming="CharacterEllipsis" Opacity="0.7"
+                                   Style="{StaticResource CaptionTextBlockStyle}"
+                                   Text="{x:Bind Subtitle}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <TextBlock Grid.Row="3" Opacity="0.7" TextWrapping="Wrap"
+                       Text="Comics you start reading will show up here."
+                       Visibility="{x:Bind ViewModel.ShowEmptyHint, Mode=OneWay}"/>
     </Grid>
 </Page>

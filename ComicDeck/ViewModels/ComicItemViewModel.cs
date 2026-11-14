@@ -58,5 +58,19 @@ namespace ComicDeck.ViewModels
             Cover = null;
         }
 
+        public int Id => _item.Id;
+        public int PageCount => _item.PageCount;
+        public bool IsCompleted => _item.Status == ReadStatus.Completed;
+
+        /// <summary>Updates the card after the user marks it read or unread</summary>
+        public void ApplyProgress(ReadStatus status, int currentPage)
+        {
+            _item.Status = status;
+            _item.CurrentPage = currentPage;
+            OnPropertyChanged(nameof(ShowProgress));
+            OnPropertyChanged(nameof(ProgressPercent));
+            OnPropertyChanged(nameof(IsCompleted));
+        }
+
     }
 }

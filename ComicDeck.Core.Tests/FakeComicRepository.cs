@@ -104,4 +104,13 @@ internal sealed class FakeComicRepository : IComicRepository
         }).ToList();
         return Task.FromResult(items);
     }
+    public async Task<IReadOnlyList<ComicListItem>> GetContinueReadingAsync(int limit, CancellationToken ct = default)
+    {
+        var items = await GetLibraryItemsAsync(ct);
+        return items
+            .Where(i => i.Status == ReadStatus.InProgress)
+            .OrderByDescending(i => ProgressRows.First(p => p.ComicId == i.Id).LastReadUtc)
+            .Take(limit)
+            .ToList();
+    }
 }

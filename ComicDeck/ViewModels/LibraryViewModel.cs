@@ -17,12 +17,20 @@ namespace ComicDeck.ViewModels
         private readonly ILibraryScanner _scanner;
         private readonly CoverThumbnailService _thumbnails;
 
-        public LibraryViewModel(IComicRepository comics, ILibraryFolderRepository folders, ILibraryScanner scanner, CoverThumbnailService thumbnails)
+        private readonly TimeProvider _time;
+
+        public LibraryViewModel(
+            IComicRepository comics,
+            ILibraryFolderRepository folders,
+            ILibraryScanner scanner,
+            CoverThumbnailService thumbnails, 
+            TimeProvider time)
         {
             _comics = comics;
             _folders = folders;
             _scanner = scanner;
             _thumbnails = thumbnails;
+            _time = time;
         }
 
         [ObservableProperty, NotifyPropertyChangedFor(nameof(ShowEmptyHint))]
@@ -117,5 +125,16 @@ namespace ComicDeck.ViewModels
             Status = summary;
         }
 
+        public async Task SetReadAsync(ComicItemViewModel comic, bool read)
+        {
+            var progress = await _comics.GetProgressAsync(comic.Id) ?? new ReadingProgress { ComicId = comic.Id };
+            var now = _time.GetUtcNow().UtcDateTime;
+
+            if (read) progress.MarkCompleted(comic.PageCount, now);
+            else progress.MarkUnread();
+
+            await _comics.SaveProgressAsync(progress);
+            comic.ApplyProgress(progress.Status, progress.CurrentPage);
+        }
     }
 }

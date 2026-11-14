@@ -42,14 +42,26 @@
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="vm:ComicItemViewModel">
                     <StackPanel Width="160" Margin="4" Spacing="6">
+                        <StackPanel.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Text="Mark as read" Tag="{x:Bind}" Click="MarkRead_Click"/>
+                                <MenuFlyoutItem Text="Mark as unread" Tag="{x:Bind}" Click="MarkUnread_Click"/>
+                            </MenuFlyout>
+                        </StackPanel.ContextFlyout>
                         <Border Width="160" Height="240" CornerRadius="4"
                                 Background="{ThemeResource LayerFillColorDefaultBrush}">
                             <Grid>
                                 <Image Source="{x:Bind Cover, Mode=OneWay}" Stretch="Uniform"/>
                                 <ProgressBar VerticalAlignment="Bottom"
                                              Maximum="100"
-                                             Value="{x:Bind ProgressPercent}"
-                                             Visibility="{x:Bind ShowProgress}"/>
+                                             Value="{x:Bind ProgressPercent, Mode=OneWay}"
+                                             Visibility="{x:Bind ShowProgress, Mode=OneWay}"/>
+                                <Border Width="24" Height="24" CornerRadius="12" Margin="6"
+                                        HorizontalAlignment="Right" VerticalAlignment="Top"
+                                        Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                        Visibility="{x:Bind IsCompleted, Mode=OneWay}">
+                                    <FontIcon Glyph="&#xE73E;" FontSize="12"/>
+                                </Border>
                             </Grid>
                         </Border>
                         <TextBlock Height="40" MaxLines="2" TextWrapping="Wrap"
