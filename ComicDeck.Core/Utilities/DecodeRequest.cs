@@ -1,4 +1,6 @@
-﻿namespace ComicDeck.Core.Utilities;
+﻿using ComicDeck.Core.Models;
+
+namespace ComicDeck.Core.Utilities;
 
 ///<summary>
 /// The largest box of a page should be decoded at. A value of 0 means "no limit on that axis".
@@ -20,6 +22,19 @@ public readonly record struct DecodeRequest(int MaxWidth, int MaxHeight)
     {
         var factor = rasterizationScale * headroom;
         return new DecodeRequest(ToPixels(widthDip, factor), ToPixels(heightDip, factor));
+    }
+
+    /// <summary> The decode box for a fit mode: fit width limits only width, fit height only height. </summary>
+    public static DecodeRequest ForFit(FitMode fit, double widthDip, double heightDip, double rasterizationScale, double headroom = 1.0)
+    {
+        var box = ForViewport(widthDip, heightDip, rasterizationScale, headroom);
+        return fit switch
+        {
+            FitMode.FitPage => box,
+            FitMode.FitWidth => box with { MaxHeight = 0 },
+            FitMode.FitHeight => box with { MaxWidth = 0 },
+            _ => Unlimited
+        };
     }
 
     private static int ToPixels(double dip, double factor)

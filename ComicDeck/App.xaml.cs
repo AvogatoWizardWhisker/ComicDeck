@@ -55,6 +55,7 @@ namespace ComicDeck
             //App services
             services.AddSingleton<PageImageLoader>();
             services.AddSingleton<CoverThumbnailService>();
+            services.AddSingleton<ReaderSettings>();
             
             
             // ViewModels : one per page, created each time the page is opened
