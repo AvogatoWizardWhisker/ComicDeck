@@ -29,5 +29,8 @@ namespace ComicDeck.Core.Library
 
         ///<summary>Every comic with its series name and reading state, for the library grid.</summary>
         Task<IReadOnlyList<ComicListItem>> GetLibraryItemsAsync(CancellationToken cancellationToken = default);
+
+        /// <summary> In-progress comics, most recently read first. </summary>
+        Task<IReadOnlyList<ComicListItem>> GetContinueReadingAsync(int limit, CancellationToken cancellationToken = default);
     }
 }

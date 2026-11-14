@@ -15,6 +15,7 @@ using Windows.Foundation.Collections;
 using ComicDeck.Core.Utilities;
 using ComicDeck.ViewModels;
 using Windows.System;
+using ComicDeck.Services;
 
 namespace ComicDeck.Pages
 {
@@ -22,7 +23,7 @@ namespace ComicDeck.Pages
     {
         public ReaderViewModel ViewModel { get; } = App.GetService<ReaderViewModel>();
 
-        private string? _path;
+        private ReaderRequest? _launch;
         private bool _opened;
         
         public ReaderPage()
@@ -31,19 +32,19 @@ namespace ComicDeck.Pages
             Loaded += ReaderPage_Loaded;
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e) => _path = e.Parameter as string;
+        protected override void OnNavigatedTo(NavigationEventArgs e) => _launch = e.Parameter as ReaderRequest;
 
-        protected override void OnNavigatedFrom(NavigationEventArgs e) => ViewModel.Dispose();
+        protected override void OnNavigatedFrom(NavigationEventArgs e) => _ = ViewModel.CloseAsync();
 
         private async void ReaderPage_Loaded(object sender, RoutedEventArgs e)
         {
-            if (_path is null || _opened) return;
+            if (_launch is null || _opened) return;
             _opened = true;
-            await ViewModel.OpenAsync(_path, CurrentRequest());
+            await ViewModel.OpenAsync(_launch.Path, _launch.ComicId, CurrentRequest());
         }
 
         private async void PageImage_SizeChanged(object sender, SizeChangedEventArgs e) =>
-            await ViewModel.UpdateViewPortAsync(CurrentRequest());
+            await ViewModel.UpdateViewportAsync(CurrentRequest());
 
         private DecodeRequest CurrentRequest() => DecodeRequest.ForViewport(
             PageImage.ActualWidth, PageImage.ActualHeight, XamlRoot?.RasterizationScale ?? 1.0);

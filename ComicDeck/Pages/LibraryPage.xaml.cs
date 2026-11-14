@@ -14,6 +14,7 @@ using Windows.Foundation;
 using Windows.Foundation.Collections;
 using ComicDeck.ViewModels;
 using ComicDeck.Helpers;
+using ComicDeck.Services;
 
 namespace ComicDeck.Pages
 {
@@ -34,13 +35,13 @@ namespace ComicDeck.Pages
         }
 
         private async void Rescan_Click(object sender, RoutedEventArgs e) => await ViewModel.RescanAsync();
-
+        /*
         private void ComicGrid_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is ComicItemViewModel comic)
                 Frame.Navigate(typeof(ReaderPage), comic.FilePath);
         }
-
+        */
         private void ComicGrid_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
             if (args.Item is not ComicItemViewModel comic) return;
@@ -49,6 +50,24 @@ namespace ComicDeck.Pages
                 comic.UnloadCover();
             else
                 _ = comic.LoadCoverAsync();
+        }
+
+        private void ComicGrid_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            if (e.ClickedItem is ComicItemViewModel comic)
+                Frame.Navigate(typeof(ReaderPage), new ReaderRequest(comic.FilePath, comic.Id));
+        }
+
+        private async void MarkRead_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is ComicItemViewModel comic)
+                await ViewModel.SetReadAsync(comic, read: true);
+        }
+
+        private async void MarkUnread_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is ComicItemViewModel comic)
+                await ViewModel.SetReadAsync(comic, read: false);
         }
     }
 }
