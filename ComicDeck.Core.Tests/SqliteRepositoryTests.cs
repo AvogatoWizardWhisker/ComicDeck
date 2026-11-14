@@ -240,7 +240,7 @@ public sealed class SqliteRepositoryTests : IAsyncLifetime
         var finished = NewComic(@"D:\Comics\finished.cbz");
         var untouched = NewComic(@"D:\Comics\untouched.cbz");
         foreach (var c in new[] { older, newer, finished, untouched }) 
-            await _repo.SaveComicAsync(c);
+            await _repo.SaveComicAsync(c, TestContext.Current.CancellationToken);
 
         var t = new DateTime(2026, 11, 5, 12, 0, 0, DateTimeKind.Utc);
 
@@ -255,10 +255,10 @@ public sealed class SqliteRepositoryTests : IAsyncLifetime
         await ReadAsync(newer, 5, t.AddHours(1));
         await ReadAsync(finished, 19, t.AddHours(2)); // last page = completed, so excluded
 
-        var result = await _repo.GetContinueReadingAsync(10);
+        var result = await _repo.GetContinueReadingAsync(10, TestContext.Current.CancellationToken);
 
         Assert.Equal(new[] { newer.Id, older.Id }, result.Select(r => r.Id));
-        Assert.Single(await _repo.GetContinueReadingAsync(1));
+        Assert.Single(await _repo.GetContinueReadingAsync(1, TestContext.Current.CancellationToken));
 
     }
 
