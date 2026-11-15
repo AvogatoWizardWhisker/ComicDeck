@@ -366,6 +366,14 @@ public sealed partial class ReaderViewModel : ObservableObject, IDisposable
             }
 
             DisplayChanged?.Invoke(this, EventArgs.Empty);
+
+            // Evicted bitmaps free their native memory only when the Garbage Collector finalizes them,
+            // and the GC can't see that memory, so prompt it now and then
+            if(++_turnsSinceCollect >= 8)
+            {
+                _turnsSinceCollect = 0;
+                _ = Task.Run(() => GC.Collect(2, GCCollectionMode.Forced, blocking: false));
+            }
         }
         catch (OperationCanceledException)
         {
@@ -484,4 +492,6 @@ public sealed partial class ReaderViewModel : ObservableObject, IDisposable
         CurrentIndex = 0;
         ViewSize = 1;
     }
+
+    private int _turnsSinceCollect;
 }
