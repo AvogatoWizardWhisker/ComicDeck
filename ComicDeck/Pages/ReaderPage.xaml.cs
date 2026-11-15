@@ -23,7 +23,7 @@ namespace ComicDeck.Pages
 {
     public sealed partial class ReaderPage : Page
     {
-        private const double ZoomHeadroom = 1.5;   // decode this much larger than the screen, so zoom stays sharp
+        private const double ZoomHeadroom = 1.0;   // decode this much larger than the screen, so zoom stays sharp
         private const double DoubleTapZoom = 1.5;
 
         public ReaderViewModel ViewModel { get; } = App.GetService<ReaderViewModel>();

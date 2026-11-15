@@ -37,10 +37,12 @@ public readonly record struct DecodeRequest(int MaxWidth, int MaxHeight)
         };
     }
 
+    private const int MaxSide = 3072;
+
     private static int ToPixels(double dip, double factor)
     {
         if (dip <= 0 || factor <= 0) return 0;
-        var pixels = (int)Math.Ceiling(dip * factor);
+        var pixels = Math.Min((int)Math.Ceiling(dip * factor), MaxSide);
         return (pixels + Step - 1) / Step * Step;
     }
 }
