@@ -6,50 +6,121 @@
     KeyboardAcceleratorPlacementMode="Hidden">
 
     <Page.KeyboardAccelerators>
-    <KeyboardAccelerator Key="Right" Invoked="OnAccelerator"/>
-    <KeyboardAccelerator Key="Left" Invoked="OnAccelerator"/>
-    <KeyboardAccelerator Key="Space" Invoked="OnAccelerator"/>
-    <KeyboardAccelerator Key="PageDown" Invoked="OnAccelerator"/>
-    <KeyboardAccelerator Key="PageUp" Invoked="OnAccelerator"/>
-    <KeyboardAccelerator Key="Home" Invoked="OnAccelerator"/>
-    <KeyboardAccelerator Key="End" Invoked="OnAccelerator"/>
-    <KeyboardAccelerator Key="Escape" Invoked="OnAccelerator"/>
+        <KeyboardAccelerator Key="Down" Invoked="OnAccelerator"/>
+        <KeyboardAccelerator Key="Up" Invoked="OnAccelerator"/>
+        <KeyboardAccelerator Key="Right" Invoked="OnAccelerator"/>
+        <KeyboardAccelerator Key="Left" Invoked="OnAccelerator"/>
+        <KeyboardAccelerator Key="Space" Invoked="OnAccelerator"/>
+        <KeyboardAccelerator Key="PageDown" Invoked="OnAccelerator"/>
+        <KeyboardAccelerator Key="PageUp" Invoked="OnAccelerator"/>
+        <KeyboardAccelerator Key="Home" Invoked="OnAccelerator"/>
+        <KeyboardAccelerator Key="End" Invoked="OnAccelerator"/>
+        <KeyboardAccelerator Key="Escape" Invoked="OnAccelerator"/>
+        <KeyboardAccelerator Key="F11" Invoked="OnAccelerator"/>
+        <KeyboardAccelerator Key="D" Invoked="OnAccelerator"/>
+        <KeyboardAccelerator Key="R" Invoked="OnAccelerator"/>
+        <KeyboardAccelerator Key="F" Invoked="OnAccelerator"/>
     </Page.KeyboardAccelerators>
     
     <Grid Background="#111111">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" Spacing="12" Padding="12,8">
-            <Button Click="Back_Click" AutomationProperties.Name="Back">
-                <FontIcon Glyph="&#xE72B;"/>
-            </Button>
-            <TextBlock Text="{x:Bind ViewModel.Title, Mode=OneWay}" VerticalAlignment="Center"/>
-        </StackPanel>
+        <ScrollViewer
+            x:Name="Scroller"
+            Background="Transparent"
+            ZoomMode="Enabled"
+            MinZoomFactor="1"
+            MaxZoomFactor="4"
+            HorizontalScrollMode="Auto"
+            VerticalScrollMode="Auto"
+            HorizontalScrollBarVisibility="Auto"
+            VerticalScrollBarVisibility="Auto"
+            SizeChanged="Scroller_SizeChanged"
+            Tapped="Scroller_Tapped"
+            DoubleTapped="Scroller_DoubleTapped"
+            PointerWheelChanged="Scroller_PointerWheelChanged">
+            
+            <!-- the outer star columns centre the pages when they are smaller than the viewport -->
+            <Grid x:Name="PageHost">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-        <Image
-            x:Name="PageImage"
-            Grid.Row="1"
-            Stretch="Uniform"
-            Source="{x:Bind ViewModel.CurrentImage, Mode=OneWay}"
-            SizeChanged="PageImage_SizeChanged"/>
+                <Image x:Name="LeftPage" Grid.Column="1" VerticalAlignment="Center"
+                       Source="{x:Bind ViewModel.LeftImage, Mode=OneWay}"/>
+                <Image x:Name="RightPage" Grid.Column="2" VerticalAlignment="Center"
+                       Source="{x:Bind ViewModel.RightImage, Mode=OneWay}"/>
+            </Grid>
+        </ScrollViewer>
 
         <ProgressRing
-            Grid.Row="1"
             Width="40"
             Height="40"
             IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"/>
 
         <TextBlock
-            Grid.Row="1"
             Margin="24"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             TextWrapping="Wrap"
             Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
             Visibility="{x:Bind ViewModel.HasError, Mode=OneWay}"/>
+
+        <Grid x:Name="TopBar" VerticalAlignment="Top" Padding="12,8" ColumnSpacing="12" Background="#CC111111">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Click="Back_Click" AutomationProperties.Name="Back">
+                <FontIcon Glyph="&#xE72B;"/>
+            </Button>
+
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                       Text="{x:Bind ViewModel.Title, Mode=OneWay}"/>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                <DropDownButton Content="Fit">
+                    <DropDownButton.Flyout>
+                        <MenuFlyout>
+                            <RadioMenuFlyoutItem x:Name="FitPageItem" Text="Fit page" Tag="FitPage"
+                                                 GroupName="Fit" Click="Fit_Click"/>
+                            <RadioMenuFlyoutItem x:Name="FitWidthItem" Text="Fit width" Tag="FitWidth"
+                                                 GroupName="Fit" Click="Fit_Click"/>
+                            <RadioMenuFlyoutItem x:Name="FitHeightItem" Text="Fit height" Tag="FitHeight"
+                                                 GroupName="Fit" Click="Fit_Click"/>
+                            <RadioMenuFlyoutItem x:Name="OriginalItem" Text="Original size" Tag="OriginalSize"
+                                                 GroupName="Fit" Click="Fit_Click"/>
+                        </MenuFlyout>
+                    </DropDownButton.Flyout>
+                </DropDownButton>
+
+                <ToggleButton x:Name="DoubleToggle" Content="Two pages"
+                              IsChecked="{x:Bind ViewModel.IsDoublePage, Mode=OneWay}"
+                              Click="Double_Click"/>
+
+                <Button Content="{x:Bind ViewModel.DirectionText, Mode=OneWay}" Click="Direction_Click"/>
+
+                <Button Click="Fullscreen_Click" AutomationProperties.Name="Full screen">
+                    <FontIcon Glyph="&#xE740;"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <Grid x:Name="BottomBar" VerticalAlignment="Bottom" Padding="16,8" ColumnSpacing="12"
+              Background="#CC111111">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Slider x:Name="PageSlider" Minimum="1" Maximum="2" IsThumbToolTipEnabled="False"
+                    ValueChanged="PageSlider_ValueChanged" />
+            <TextBlock Grid.Column="1" VerticalAlignment="Center"
+                       Text="{x:Bind ViewModel.PageText, Mode=OneWay}"/>
+        </Grid>
     </Grid>
 </Page>

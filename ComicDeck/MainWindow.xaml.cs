@@ -3,9 +3,6 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace ComicDeck
 {
     public sealed partial class MainWindow : Window
@@ -50,6 +47,24 @@ namespace ComicDeck
                         throw new InvalidOperationException($"Unknown navigation item tag: {item.Tag}");
                 }
             }
+        }
+
+        public bool IsFullScreen => AppWindow.Presenter.Kind == AppWindowPresenterKind.FullScreen;
+
+        /// <summary> the reader hides the navigation pan while it is open</summary>
+        public void SetReaderMode(bool on)
+        {
+            NavView.IsPaneVisible = !on;
+            if (!on) SetFullScreen(false);
+        }
+
+        public void SetFullScreen(bool on)
+        {
+            if (on != IsFullScreen)
+                AppWindow.SetPresenter(on ? AppWindowPresenterKind.FullScreen : AppWindowPresenterKind.Default);
+
+            AppTitleBar.Visibility = on ? Visibility.Collapsed : Visibility.Visible;
+            TitleRow.Height = new GridLength(on ? 0 : 40);
         }
     }
 }
