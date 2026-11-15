@@ -156,9 +156,9 @@ namespace ComicDeck.Pages
             if (resetView)
             {
                 Scroller.UpdateLayout();
-                // Wide pages start at the edge where reading begins.
                 var x = ViewModel.IsRightToLeft ? Scroller.ScrollableWidth : 0;
-                Scroller.ChangeView(x, 0, 1f, disableAnimation: true);
+                var y = _landAtBottom ? Scroller.ScrollableHeight : 0;
+                Scroller.ChangeView(x, y, 1f, disableAnimation: true);
             }
         }
 
@@ -169,6 +169,12 @@ namespace ComicDeck.Pages
             args.Handled = true;
             switch (sender.Key)
             {
+                case VirtualKey.Down:
+                    await ViewModel.NextAsync();
+                    break;
+                case VirtualKey.Up:
+                    await ViewModel.PreviousAsync();
+                    break;
                 case VirtualKey.Right:
                     await ViewModel.StepRightAsync();
                     break;
@@ -205,6 +211,48 @@ namespace ComicDeck.Pages
                     await SetFitAsync((FitMode)(((int)ViewModel.FitMode + 1) % 4));
                     break;
             }
+        }
+
+        // mouse
+
+        private long _lastWheelTurn;
+        private bool _landAtBottom; // set while going back, so the previous page opens at its bottom
+
+        private async void Scroller_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
+        {
+            // Ctrl + wheel is zoom and Shift + wheel is horizontal scroll: leave both to the ScrollViewer
+            if (e.KeyModifiers.HasFlag(VirtualKeyModifiers.Control) ||
+                e.KeyModifiers.HasFlag(VirtualKeyModifiers.Shift)) return;
+
+            var props = e.GetCurrentPoint(Scroller).Properties;
+            if (props.IsHorizontalMouseWheel || props.MouseWheelDelta == 0) return;
+
+            var forward = props.MouseWheelDelta < 0;
+            const double edge = 2; // pixels of tolerance at the very top or bottom
+
+            var atEdge = forward
+                ? Scroller.ScrollableHeight - Scroller.VerticalOffset <= edge
+                : Scroller.VerticalOffset <= edge;
+            if (atEdge) return; // not at the edge yet: the ScrollViewer scrolls as usual
+
+            e.Handled = true;
+
+            // one flick sens many wheels evens, so allow only one page turn per short interval
+            if (Environment.TickCount64 - _lastWheelTurn < 450) return;
+            _lastWheelTurn = Environment.TickCount64;
+
+            if (forward)
+            {
+                await ViewModel.NextAsync();
+            }
+            else
+            {
+                _landAtBottom = true;
+                try { await ViewModel.PreviousAsync(); }
+                finally { _landAtBottom = false; }
+            }
+
+            _lastWheelTurn = Environment.TickCount64;
         }
 
         /// <summary> Space and Page Down scroll a tall page first, then turn the page at the bottom. </summary>

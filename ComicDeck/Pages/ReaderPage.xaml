@@ -6,6 +6,8 @@
     KeyboardAcceleratorPlacementMode="Hidden">
 
     <Page.KeyboardAccelerators>
+        <KeyboardAccelerator Key="Down" Invoked="OnAccelerator"/>
+        <KeyboardAccelerator Key="Up" Invoked="OnAccelerator"/>
         <KeyboardAccelerator Key="Right" Invoked="OnAccelerator"/>
         <KeyboardAccelerator Key="Left" Invoked="OnAccelerator"/>
         <KeyboardAccelerator Key="Space" Invoked="OnAccelerator"/>
@@ -34,7 +36,8 @@
             VerticalScrollBarVisibility="Auto"
             SizeChanged="Scroller_SizeChanged"
             Tapped="Scroller_Tapped"
-            DoubleTapped="Scroller_DoubleTapped">
+            DoubleTapped="Scroller_DoubleTapped"
+            PointerWheelChanged="Scroller_PointerWheelChanged">
             
             <!-- the outer star columns centre the pages when they are smaller than the viewport -->
             <Grid x:Name="PageHost">
