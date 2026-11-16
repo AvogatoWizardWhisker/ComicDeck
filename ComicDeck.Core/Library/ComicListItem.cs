@@ -21,6 +21,8 @@ namespace ComicDeck.Core.Library
         public bool IsFavorite { get; set; }
         public int CurrentPage { get; set; }
         public ReadStatus Status { get; set; }
+        public DateTime AddedUtc { get; set; }
+        public DateTime? LastReadUtc { get; set; }
 
         public string DisplayTitle => !string.IsNullOrWhiteSpace(Title) ? Title : Path.GetFileNameWithoutExtension(FilePath);
     }

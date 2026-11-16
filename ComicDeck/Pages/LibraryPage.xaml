@@ -9,31 +9,64 @@
     xmlns:vm="using:ComicDeck.ViewModels"
     mc:Ignorable="d">
 
-    <Grid Padding="24, 16, 24, 0" RowSpacing="12">
+    <Page.KeyboardAccelerators>
+        <KeyboardAccelerator Key="F" Modifiers="Control" Invoked="FocusSearch" />
+    </Page.KeyboardAccelerators>
+
+    <Grid Padding="24,16,24,0" RowSpacing="12">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal" Spacing="12">
-            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Library" VerticalAlignment="Center"/>
-            <Button Content="Add folder..." Click="AddFolder_Click"
-                    IsEnabled="{x:Bind ViewModel.IsIdle, Mode=OneWay}"/>
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="Library" VerticalAlignment="Center" />
+            <Button Content="Add folder…" Click="AddFolder_Click"
+                    IsEnabled="{x:Bind ViewModel.IsIdle, Mode=OneWay}" />
             <Button Content="Rescan" Click="Rescan_Click"
-                    IsEnabled="{x:Bind ViewModel.IsIdle, Mode=OneWay}"/>
+                    IsEnabled="{x:Bind ViewModel.IsIdle, Mode=OneWay}" />
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Spacing="6">
-            <TextBlock Text="{x:Bind ViewModel.Status, Mode=OneWay}" Opacity="0.8"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+            <AutoSuggestBox x:Name="SearchBox" Width="280" PlaceholderText="Search (Ctrl+F)"
+                            QueryIcon="Find" TextChanged="SearchBox_TextChanged" />
+
+            <ComboBox x:Name="SortBox" SelectedIndex="0" SelectionChanged="Sort_Changed"
+                      AutomationProperties.Name="Sort by">
+                <ComboBoxItem Content="Series" Tag="Series" />
+                <ComboBoxItem Content="Title" Tag="Title" />
+                <ComboBoxItem Content="Recently added" Tag="RecentlyAdded" />
+                <ComboBoxItem Content="Recently read" Tag="RecentlyRead" />
+            </ComboBox>
+
+            <ToggleButton x:Name="ReverseToggle" Click="Reverse_Click"
+                          ToolTipService.ToolTip="Reverse order"
+                          AutomationProperties.Name="Reverse order">
+                <FontIcon Glyph="&#xE8CB;" />
+            </ToggleButton>
+
+            <ComboBox x:Name="FilterBox" SelectedIndex="0" SelectionChanged="Filter_Changed"
+                      AutomationProperties.Name="Show">
+                <ComboBoxItem Content="All comics" Tag="All" />
+                <ComboBoxItem Content="Unread" Tag="Unread" />
+                <ComboBoxItem Content="In progress" Tag="InProgress" />
+                <ComboBoxItem Content="Completed" Tag="Completed" />
+                <ComboBoxItem Content="Favorites" Tag="Favorites" />
+            </ComboBox>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Spacing="6">
+            <TextBlock Text="{x:Bind ViewModel.Status, Mode=OneWay}" Opacity="0.8" />
             <ProgressBar Maximum="{x:Bind ViewModel.ScanMaximum, Mode=OneWay}"
                          Value="{x:Bind ViewModel.ScanValue, Mode=OneWay}"
-                         Visibility="{x:Bind ViewModel.IsScanning, Mode=OneWay}"/>
+                         Visibility="{x:Bind ViewModel.IsScanning, Mode=OneWay}" />
         </StackPanel>
 
-        <GridView 
+        <GridView
             x:Name="ComicGrid"
-            Grid.Row="2"
+            Grid.Row="3"
             ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
             SelectionMode="None"
             IsItemClickEnabled="True"
@@ -44,44 +77,53 @@
                     <StackPanel Width="160" Margin="4" Spacing="6">
                         <StackPanel.ContextFlyout>
                             <MenuFlyout>
-                                <MenuFlyoutItem Text="Mark as read" Tag="{x:Bind}" Click="MarkRead_Click"/>
-                                <MenuFlyoutItem Text="Mark as unread" Tag="{x:Bind}" Click="MarkUnread_Click"/>
+                                <MenuFlyoutItem Text="Mark as read" Tag="{x:Bind}" Click="MarkRead_Click" />
+                                <MenuFlyoutItem Text="Mark as unread" Tag="{x:Bind}" Click="MarkUnread_Click" />
                             </MenuFlyout>
                         </StackPanel.ContextFlyout>
                         <Border Width="160" Height="240" CornerRadius="4"
                                 Background="{ThemeResource LayerFillColorDefaultBrush}">
                             <Grid>
-                                <Image Source="{x:Bind Cover, Mode=OneWay}" Stretch="Uniform"/>
+                                <Image Source="{x:Bind Cover, Mode=OneWay}" Stretch="Uniform" />
                                 <ProgressBar VerticalAlignment="Bottom"
                                              Maximum="100"
                                              Value="{x:Bind ProgressPercent, Mode=OneWay}"
-                                             Visibility="{x:Bind ShowProgress, Mode=OneWay}"/>
+                                             Visibility="{x:Bind ShowProgress, Mode=OneWay}" />
                                 <Border Width="24" Height="24" CornerRadius="12" Margin="6"
                                         HorizontalAlignment="Right" VerticalAlignment="Top"
                                         Background="{ThemeResource AccentFillColorDefaultBrush}"
                                         Visibility="{x:Bind IsCompleted, Mode=OneWay}">
-                                    <FontIcon Glyph="&#xE73E;" FontSize="12"/>
+                                    <FontIcon Glyph="&#xE73E;" FontSize="12" />
                                 </Border>
                             </Grid>
                         </Border>
                         <TextBlock Height="40" MaxLines="2" TextWrapping="Wrap"
                                    TextTrimming="CharacterEllipsis"
                                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                                   Text="{x:Bind Title}"/>
+                                   Text="{x:Bind Title}" />
                         <TextBlock Height="18" TextTrimming="CharacterEllipsis" Opacity="0.7"
                                    Style="{StaticResource CaptionTextBlockStyle}"
-                                   Text="{x:Bind Subtitle}"/>
+                                   Text="{x:Bind Subtitle}" />
                     </StackPanel>
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>
 
         <TextBlock
-            Grid.Row="2"
+            Grid.Row="3"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
             Opacity="0.7"
             Text="Your library is empty. Click “Add folder…” to choose where your comics are."
-            Visibility="{x:Bind ViewModel.ShowEmptyHint, Mode=OneWay}"/>
+            Visibility="{x:Bind ViewModel.ShowEmptyHint, Mode=OneWay}" />
+
+        <TextBlock
+            Grid.Row="3"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Opacity="0.7"
+            Text="No comics match your search or filter."
+            Visibility="{x:Bind ViewModel.ShowNoMatches, Mode=OneWay}" />
     </Grid>
+
 </Page>
