@@ -55,7 +55,10 @@ namespace ComicDeck
         public void SetReaderMode(bool on)
         {
             NavView.IsPaneVisible = !on;
-            if (!on) SetFullScreen(false);
+            AppTitleBar.IsPaneToggleButtonVisible = !on;
+
+            if (on) NavView.IsPaneOpen = false; // so it isn't left open when the reader closes
+            else SetFullScreen(false);
         }
 
         public void SetFullScreen(bool on)
