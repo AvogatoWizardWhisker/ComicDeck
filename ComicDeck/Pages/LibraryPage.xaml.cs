@@ -15,6 +15,7 @@ using Windows.Foundation.Collections;
 using ComicDeck.ViewModels;
 using ComicDeck.Helpers;
 using ComicDeck.Services;
+using ComicDeck.Core.Library;
 
 namespace ComicDeck.Pages
 {
@@ -68,6 +69,28 @@ namespace ComicDeck.Pages
         {
             if ((sender as FrameworkElement)?.Tag is ComicItemViewModel comic)
                 await ViewModel.SetReadAsync(comic, read: false);
+        }
+
+        private async void SearchBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args) => await ViewModel.SetSearchAsync(sender.Text);
+
+        private async void Sort_Changed(object sender, SelectionChangedEventArgs e)
+        {
+            if (SortBox.SelectedItem is ComboBoxItem { Tag: string tag } && Enum.TryParse<LibrarySort>(tag, out var sort))
+                await ViewModel.SetSortAsync(sort);
+        }
+
+        private async void Filter_Changed(object sender, SelectionChangedEventArgs e)
+        {
+            if (FilterBox.SelectedItem is ComboBoxItem { Tag: string tag } && Enum.TryParse<LibraryFilter>(tag, out var filter))
+                await ViewModel.SetFilterAsync(filter);
+        }
+
+        private async void Reverse_Click(object sender, RoutedEventArgs e) => await ViewModel.SetReverseAsync(ReverseToggle.IsChecked == true);
+
+        private void FocusSearch(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
+        {
+            args.Handled = true;
+            SearchBox.Focus(FocusState.Keyboard);
         }
     }
 }

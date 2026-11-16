@@ -113,9 +113,9 @@ namespace ComicDeck.Core.Data
 
             return await _db.QueryAsync<ComicListItem>(
                 """
-                SELECT c.Id, c.FilePath, c.Title, s.Name AS SeriesName, c.Number, c.PageCount, c.FileSize, c.FileModifiedUtc, c.IsFavorite,
+                SELECT c.Id, c.FilePath, c.Title, s.Name AS SeriesName, c.Number, c.PageCount, c.FileSize, c.FileModifiedUtc, c.IsFavorite, c.AddedUtc,
                 COALESCE(p.CurrentPage, 0) AS CurrentPage,
-                COALESCE(p.Status, 0) AS Status
+                COALESCE(p.Status, 0) AS Status, p.LastReadUtc AS LastReadUtc
                 From Comic c
                 LEFT JOIN Series s ON s.Id = c.SeriesId
                 LEFT JOIN ReadingProgress p ON p.ComicId = c.Id

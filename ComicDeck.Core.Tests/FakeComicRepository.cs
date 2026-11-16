@@ -99,7 +99,9 @@ internal sealed class FakeComicRepository : IComicRepository
                 FileModifiedUtc = c.FileModifiedUtc,
                 IsFavorite = c.IsFavorite,
                 CurrentPage = progress?.CurrentPage ?? 0,
-                Status = progress?.Status ?? ReadStatus.Unread
+                Status = progress?.Status ?? ReadStatus.Unread,
+                AddedUtc = c.AddedUtc,
+                LastReadUtc = progress?.LastReadUtc
             };
         }).ToList();
         return Task.FromResult(items);

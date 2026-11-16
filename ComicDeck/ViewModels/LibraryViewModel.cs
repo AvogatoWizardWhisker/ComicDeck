@@ -12,18 +12,24 @@ namespace ComicDeck.ViewModels
 {
     public sealed partial class LibraryViewModel : ObservableObject
     {
+        private static readonly TimeSpan SearchDelay = TimeSpan.FromMilliseconds(250);
+
         private readonly IComicRepository _comics;
         private readonly ILibraryFolderRepository _folders;
         private readonly ILibraryScanner _scanner;
         private readonly CoverThumbnailService _thumbnails;
-
         private readonly TimeProvider _time;
+
+        private IReadOnlyList<ComicListItem> _all = Array.Empty<ComicListItem>();
+        private LibraryQuery _query = new();
+        private CancellationTokenSource? _searchDelay;
+        private int _applyVersion;
 
         public LibraryViewModel(
             IComicRepository comics,
             ILibraryFolderRepository folders,
             ILibraryScanner scanner,
-            CoverThumbnailService thumbnails, 
+            CoverThumbnailService thumbnails,
             TimeProvider time)
         {
             _comics = comics;
@@ -31,35 +37,92 @@ namespace ComicDeck.ViewModels
             _scanner = scanner;
             _thumbnails = thumbnails;
             _time = time;
+
+            Items = Array.Empty<ComicItemViewModel>();
+            Status = string.Empty;
+            ScanMaximum = 1;
         }
 
-        [ObservableProperty, NotifyPropertyChangedFor(nameof(ShowEmptyHint))]
-        public partial IReadOnlyList<ComicItemViewModel> Items { get; set; } = Array.Empty<ComicItemViewModel>();
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ShowEmptyHint))]
+        [NotifyPropertyChangedFor(nameof(ShowNoMatches))]
+        public partial IReadOnlyList<ComicItemViewModel> Items { get; set; }
 
-        [ObservableProperty, NotifyPropertyChangedFor(nameof(IsIdle), nameof(ShowEmptyHint))]
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsIdle))]
+        [NotifyPropertyChangedFor(nameof(ShowEmptyHint))]
         public partial bool IsScanning { get; set; }
 
-        [ObservableProperty] public partial string Status { get; set; } = string.Empty;
-        [ObservableProperty] public partial double ScanMaximum { get; set; } = 1;
-        [ObservableProperty] public partial double ScanValue { get; set; }
+        [ObservableProperty]
+        public partial string Status { get; set; }
+
+        [ObservableProperty]
+        public partial double ScanMaximum { get; set; }
+
+        [ObservableProperty]
+        public partial double ScanValue { get; set; }
 
         public bool IsIdle => !IsScanning;
-        public bool ShowEmptyHint => Items.Count == 0 && !IsScanning;
+        public bool ShowEmptyHint => _all.Count == 0 && !IsScanning;
+        public bool ShowNoMatches => _all.Count > 0 && Items.Count == 0;
+
+        // loading, searching and sorting
 
         public async Task LoadAsync()
         {
-            var rows = await _comics.GetLibraryItemsAsync();
-
-            // Sorting and building 10,000 view models doesn't belong in the UI thread
-            Items = await Task.Run(() => rows
-            .OrderBy(r => r.SeriesName ?? r.DisplayTitle, NaturalStringComparer.Instance)
-            .ThenBy(r => r.Number ?? string.Empty, NaturalStringComparer.Instance)
-            .ThenBy(r => r.DisplayTitle, NaturalStringComparer.Instance)
-            .Select(r => new ComicItemViewModel(r, _thumbnails))
-            .ToList());
-
-            Status = Items.Count == 0 ? string.Empty : $"{Items.Count} comics";
+            _all = await _comics.GetLibraryItemsAsync();
+            await ApplyQueryAsync();
         }
+
+        /// <summary> Waits for a pause in typing, so each keystroke doesn't re-run the query.</summary>
+        public async Task SetSearchAsync(string text)
+        {
+            _searchDelay?.Cancel();
+            var cts = _searchDelay = new CancellationTokenSource();
+
+            try
+            {
+                await Task.Delay(SearchDelay, cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                return;   // newer keystroke
+            }
+
+            await UpdateQueryAsync(_query with { Search = text });
+        }
+
+        public Task SetSortAsync(LibrarySort sort) => UpdateQueryAsync(_query with { Sort = sort });
+        public Task SetReverseAsync(bool reverse) => UpdateQueryAsync(_query with { Reverse = reverse });
+        public Task SetFilterAsync(LibraryFilter filter) => UpdateQueryAsync(_query with { Filter = filter });
+
+        private Task UpdateQueryAsync(LibraryQuery query)
+        {
+            if (query == _query) return Task.CompletedTask;
+            _query = query;
+            return ApplyQueryAsync();
+        }
+
+        private async Task ApplyQueryAsync()
+        {
+            var version = ++_applyVersion;
+            var rows = _all;
+            var query = _query;
+
+            // Sorting and building up to 10,000 view models doesn't belong on the UI thread.
+            var built = await Task.Run(() => LibraryQuery.Apply(rows, query)
+                .Select(r => new ComicItemViewModel(r, _thumbnails))
+                .ToList());
+
+            if (version != _applyVersion) return;   // a newer query is already running
+
+            Items = built;
+            Status = _all.Count == 0 ? string.Empty
+                   : query.IsFiltered ? $"{built.Count} of {_all.Count} comics"
+                   : $"{_all.Count} comics";
+        }
+
+        // folders and scanning
 
         public async Task AddFolderAsync(string path)
         {
@@ -72,7 +135,7 @@ namespace ComicDeck.ViewModels
             var folders = await _folders.GetFoldersAsync();
             if (folders.Count == 0)
             {
-                Status = "Add a folder first";
+                Status = "Add a folder first.";
                 return;
             }
             await ScanAsync(folders);
@@ -86,7 +149,7 @@ namespace ComicDeck.ViewModels
             int added = 0, updated = 0, removed = 0, failed = 0;
             var unavailable = new List<string>();
 
-            // Create here, on the UI thread, so the callbacks arrive on the UI thread too.
+            // Created here, on the UI thread, so the callbacks arrive on the UI thread too.
             var progress = new Progress<ScanProgress>(p =>
             {
                 ScanMaximum = Math.Max(p.Total, 1);
@@ -98,9 +161,10 @@ namespace ComicDeck.ViewModels
             {
                 foreach (var folder in folders)
                 {
+                    var folderPath = folder.Path;
                     try
                     {
-                        var result = await Task.Run(() => _scanner.ScanAsync(folder.Path, progress));
+                        var result = await Task.Run(() => _scanner.ScanAsync(folderPath, progress));
                         added += result.Added;
                         updated += result.Updated;
                         removed += result.Removed;
@@ -108,7 +172,7 @@ namespace ComicDeck.ViewModels
                     }
                     catch (DirectoryNotFoundException)
                     {
-                        unavailable.Add(folder.Path); // e.g an unplugged drive: its comics are kept
+                        unavailable.Add(folderPath);   // e.g. an unplugged drive: its comics are kept
                     }
                 }
             }
@@ -120,14 +184,17 @@ namespace ComicDeck.ViewModels
             await LoadAsync();
 
             var summary = $"Added {added}, updated {updated}, removed {removed}.";
-            if (failed > 0) summary += $"{failed} file(s) couldn't be read.";
-            if (unavailable.Count > 0) summary += $"{unavailable.Count} folder(s) unavailable";
+            if (failed > 0) summary += $" {failed} file(s) couldn't be read.";
+            if (unavailable.Count > 0) summary += $" {unavailable.Count} folder(s) unavailable.";
             Status = summary;
         }
 
+        // read state
+
         public async Task SetReadAsync(ComicItemViewModel comic, bool read)
         {
-            var progress = await _comics.GetProgressAsync(comic.Id) ?? new ReadingProgress { ComicId = comic.Id };
+            var progress = await _comics.GetProgressAsync(comic.Id)
+                           ?? new ReadingProgress { ComicId = comic.Id };
             var now = _time.GetUtcNow().UtcDateTime;
 
             if (read) progress.MarkCompleted(comic.PageCount, now);
