@@ -72,5 +72,15 @@ namespace ComicDeck.ViewModels
             OnPropertyChanged(nameof(IsCompleted));
         }
 
+        public bool IsFavorite => _item.IsFavorite;
+        public string FavoriteMenuText => _item.IsFavorite ? "Remove from favorites" : "Add to favorites";
+
+        public void ApplyFavorite(bool isFavorite)
+        {
+            _item.IsFavorite = isFavorite;
+            OnPropertyChanged(nameof(isFavorite));
+            OnPropertyChanged(nameof(FavoriteMenuText));
+        }
+
     }
 }

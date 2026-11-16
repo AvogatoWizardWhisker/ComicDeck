@@ -32,5 +32,7 @@ namespace ComicDeck.Core.Library
 
         /// <summary> In-progress comics, most recently read first. </summary>
         Task<IReadOnlyList<ComicListItem>> GetContinueReadingAsync(int limit, CancellationToken cancellationToken = default);
+
+        Task SetFavoriteAsync(int comicId, bool isFavorite, CancellationToken cancellationToken = default);
     }
 }

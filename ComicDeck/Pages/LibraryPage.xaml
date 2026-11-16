@@ -77,6 +77,7 @@
                     <StackPanel Width="160" Margin="4" Spacing="6">
                         <StackPanel.ContextFlyout>
                             <MenuFlyout>
+                                <MenuFlyoutItem Text="{x:Bind FavoriteMenuText, Mode=OneWay}" Tag="{x:Bind}" Click="Favorite_Click"/>
                                 <MenuFlyoutItem Text="Mark as read" Tag="{x:Bind}" Click="MarkRead_Click" />
                                 <MenuFlyoutItem Text="Mark as unread" Tag="{x:Bind}" Click="MarkUnread_Click" />
                             </MenuFlyout>
@@ -95,6 +96,7 @@
                                         Visibility="{x:Bind IsCompleted, Mode=OneWay}">
                                     <FontIcon Glyph="&#xE73E;" FontSize="12" />
                                 </Border>
+                                <FontIcon Glyph="&#xE735;" FontSize="18" Margin="8" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="Gold" Visibility="{x:Bind IsFavorite, Mode=OneWay}"/>
                             </Grid>
                         </Border>
                         <TextBlock Height="40" MaxLines="2" TextWrapping="Wrap"

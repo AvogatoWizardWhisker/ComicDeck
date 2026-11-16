@@ -140,5 +140,11 @@ namespace ComicDeck.Core.Data
                 LIMIT ?
                 """, limit);
         }
+
+        public async Task SetFavoriteAsync(int comicId, bool isFavorite, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            await _db.ExecuteAsync("UPDATE Comic SET IsFavorite = ? WHERE Id = ?", isFavorite ? 1 : 0, comicId);
+        }
     }
 }

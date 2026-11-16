@@ -115,4 +115,11 @@ internal sealed class FakeComicRepository : IComicRepository
             .Take(limit)
             .ToList();
     }
+
+    public Task SetFavoriteAsync(int comicId, bool isFavorite, CancellationToken ct = default)
+    {
+        var comic = Comics.FirstOrDefault(c => c.Id == comicId);
+        if (comic is not null) comic.IsFavorite = isFavorite;
+        return Task.CompletedTask;
+    }
 }
