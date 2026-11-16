@@ -262,5 +262,23 @@ public sealed class SqliteRepositoryTests : IAsyncLifetime
 
     }
 
+    [Fact]
+    public async Task Favorite_flag_round_trips_without_touching_other_fields()
+    {
+        var comic = NewComic(@"D:\Comics\a.cbz");
+        comic.Title = "Keep me";
+        await _repo.SaveComicAsync(comic, TestContext.Current.CancellationToken);
+
+        await _repo.SetFavoriteAsync(comic.Id, true, TestContext.Current.CancellationToken);
+        var item = (await _repo.GetLibraryItemsAsync(TestContext.Current.CancellationToken)).Single();
+        Assert.True(item.IsFavorite);
+        Assert.Equal("Keep me", item.Title);
+
+        await _repo.SetFavoriteAsync(comic.Id, false, TestContext.Current.CancellationToken);
+        Assert.False((await _repo.GetLibraryItemsAsync(TestContext.Current.CancellationToken)).Single().IsFavorite);
+    }
+
+
+
 }
 

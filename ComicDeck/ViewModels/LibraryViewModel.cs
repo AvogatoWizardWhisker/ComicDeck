@@ -203,5 +203,12 @@ namespace ComicDeck.ViewModels
             await _comics.SaveProgressAsync(progress);
             comic.ApplyProgress(progress.Status, progress.CurrentPage);
         }
+
+        public async Task ToggleFavoriteAsync(ComicItemViewModel comic)
+        {
+            var favorite = !comic.IsFavorite;
+            await _comics.SetFavoriteAsync(comic.Id, favorite);
+            comic.ApplyFavorite(favorite);
+        }
     }
 }

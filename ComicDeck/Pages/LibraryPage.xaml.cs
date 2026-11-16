@@ -92,5 +92,11 @@ namespace ComicDeck.Pages
             args.Handled = true;
             SearchBox.Focus(FocusState.Keyboard);
         }
+
+        private async void Favorite_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is ComicItemViewModel comic)
+                await ViewModel.ToggleFavoriteAsync(comic);
+        }
     }
 }
