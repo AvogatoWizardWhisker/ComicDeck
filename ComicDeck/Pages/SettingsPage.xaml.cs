@@ -3,6 +3,7 @@ using ComicDeck.ViewModels;
 using ComicDeck.Helpers;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Windows.ApplicationModel;
 
 namespace ComicDeck.Pages
 {
@@ -58,6 +59,17 @@ namespace ComicDeck.Pages
             var path = await FilePickers.PickFolderAsync();
             if (path is not null)
                 await ViewModel.AddFolderAsync(path);
+        }
+
+        public string Copyright => $"© {DateTime.Now.Year} Solus Gameolus";
+
+        public string VersionText
+        {
+            get
+            {
+                var v = Package.Current.Id.Version;
+                return $"Version {v.Major}.{v.Minor}.{v.Build}.{v.Revision}";
+            }
         }
 
     }

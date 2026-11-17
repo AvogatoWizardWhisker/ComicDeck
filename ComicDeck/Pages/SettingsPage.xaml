@@ -92,6 +92,53 @@
                        Opacity="0.9" TextWrapping="Wrap" />
 
             <TextBlock Text="{x:Bind ViewModel.Status, Mode=OneWay}" TextWrapping="Wrap" Opacity="0.8" />
+            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="About" Margin="0,12,0,0" />
+
+            <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                <Expander.Header>
+                    <Grid Padding="0,12" ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <FontIcon Glyph="&#xE946;" VerticalAlignment="Center" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="ComicDeck" />
+                            <TextBlock Text="{x:Bind Copyright}" Opacity="0.7"
+                           Style="{StaticResource CaptionTextBlockStyle}" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="2" Text="{x:Bind VersionText}"
+                       VerticalAlignment="Center" Opacity="0.8" />
+                    </Grid>
+                </Expander.Header>
+
+                <StackPanel Spacing="16">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Source code" />
+                        <HyperlinkButton Padding="0" Content="github.com/AvogatoWiazrdWhisker/ComicDeck"
+                             NavigateUri="https://github.com/AvogatoWizardWhisker/ComicDeck" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Open source libraries" />
+                        <HyperlinkButton Padding="0" Content=".NET Community Toolkit (MVVM Toolkit)"
+                             NavigateUri="https://github.com/CommunityToolkit/dotnet" />
+                        <HyperlinkButton Padding="0" Content="Microsoft.Extensions.DependencyInjection"
+                             NavigateUri="https://github.com/dotnet/runtime" />
+                        <HyperlinkButton Padding="0" Content="SharpCompress"
+                             NavigateUri="https://github.com/adamhathcock/sharpcompress" />
+                        <HyperlinkButton Padding="0" Content="sqlite-net"
+                             NavigateUri="https://github.com/praeclarum/sqlite-net" />
+                        <HyperlinkButton Padding="0" Content="SQLitePCLRaw"
+                             NavigateUri="https://github.com/ericsink/SQLitePCL.raw" />
+                        <HyperlinkButton Padding="0" Content="Windows App SDK"
+                             NavigateUri="https://github.com/microsoft/WindowsAppSDK" />
+                        <HyperlinkButton Padding="0" Content="WinUI 3"
+                             NavigateUri="https://github.com/microsoft/microsoft-ui-xaml" />
+                    </StackPanel>
+                </StackPanel>
+            </Expander>
         </StackPanel>
     </ScrollViewer>
 </Page>
