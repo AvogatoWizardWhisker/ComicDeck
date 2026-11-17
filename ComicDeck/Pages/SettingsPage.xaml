@@ -125,7 +125,7 @@
                         <HyperlinkButton Padding="0" Content=".NET Community Toolkit (MVVM Toolkit)"
                              NavigateUri="https://github.com/CommunityToolkit/dotnet" />
                         <HyperlinkButton Padding="0" Content="Microsoft.Extensions.DependencyInjection"
-                             NavigateUri="https://github.com/dotnet/runtime" />
+                             NavigateUri="https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection/" />
                         <HyperlinkButton Padding="0" Content="SharpCompress"
                              NavigateUri="https://github.com/adamhathcock/sharpcompress" />
                         <HyperlinkButton Padding="0" Content="sqlite-net"
