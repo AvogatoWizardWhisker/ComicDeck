@@ -39,5 +39,11 @@ namespace ComicDeck.Pages
             else
                 _ = comic.LoadCoverAsync();
         }
+
+        private async void Favorite_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is ComicItemViewModel comic)
+                await ViewModel.ToggleFavoriteAsync(comic);
+        }
     }
 }

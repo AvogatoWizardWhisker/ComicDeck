@@ -34,5 +34,12 @@ namespace ComicDeck.ViewModels
             var rows = await _comics.GetContinueReadingAsync(ShelfSize);
             ContinueReading = rows.Select(r => new ComicItemViewModel(r, _thumbnails)).ToList();
         }
+
+        public async Task ToggleFavoriteAsync(ComicItemViewModel comic)
+        {
+            var favorite = !comic.IsFavorite;
+            await _comics.SetFavoriteAsync(comic.Id, favorite);
+            comic.ApplyFavorite(favorite);
+        }
     }
 }

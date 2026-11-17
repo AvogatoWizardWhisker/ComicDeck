@@ -34,6 +34,7 @@ namespace ComicDeck
             Services = ConfigureServices(database);
 
             _window = new MainWindow();
+            GetService<ThemeService>().Apply(_window);
             CurrentWindow = _window;
             _window.Closed += async (_, _) => await database.DisposeAsync();
             _window.Activate();
@@ -56,6 +57,7 @@ namespace ComicDeck
             services.AddSingleton<PageImageLoader>();
             services.AddSingleton<CoverThumbnailService>();
             services.AddSingleton<ReaderSettings>();
+            services.AddSingleton<ThemeService>();
             
             
             // ViewModels : one per page, created each time the page is opened
@@ -63,6 +65,7 @@ namespace ComicDeck
             services.AddTransient<ReaderViewModel>();
             services.AddTransient<LibraryViewModel>();
             services.AddSingleton<ILibraryScanner, LibraryScanner>();
+            services.AddTransient<SettingsViewModel>();
 
             return services.BuildServiceProvider();
 

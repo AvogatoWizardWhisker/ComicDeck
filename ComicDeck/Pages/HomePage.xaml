@@ -44,6 +44,12 @@
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="vm:ComicItemViewModel">
                     <StackPanel Width="160" Margin="4" Spacing="6">
+                        <StackPanel.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuFlyoutItem Text="{x:Bind FavoriteMenuText, Mode=OneWay}"
+                                                Tag="{x:Bind}" Click="Favorite_Click"/>
+                            </MenuFlyout>
+                        </StackPanel.ContextFlyout>
                         <Border Width="160" Height="240" CornerRadius="4"
                                 Background="{ThemeResource LayerFillColorDefaultBrush}">
                             <Grid>
@@ -51,6 +57,7 @@
                                 <ProgressBar VerticalAlignment="Bottom" Maximum="100"
                                              Value="{x:Bind ProgressPercent, Mode=OneWay}"
                                              Visibility="{x:Bind ShowProgress, Mode=OneWay}"/>
+                                <FontIcon Glyph="&#xE735;" FontSize="18" Margin="8" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="Gold" Visibility="{x:Bind IsFavorite, Mode=OneWay}"/>
                             </Grid>
                         </Border>
                         <TextBlock Height="40" MaxLines="2" TextWrapping="Wrap"
