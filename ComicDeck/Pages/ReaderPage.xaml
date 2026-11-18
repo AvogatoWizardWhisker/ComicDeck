@@ -22,7 +22,7 @@
         <KeyboardAccelerator Key="F" Invoked="OnAccelerator"/>
     </Page.KeyboardAccelerators>
     
-    <Grid Background="#111111">
+    <Grid Background="#111111" RequestedTheme="Dark">
 
         <ScrollViewer
             x:Name="Scroller"
@@ -68,7 +68,7 @@
             Text="{x:Bind ViewModel.ErrorMessage, Mode=OneWay}"
             Visibility="{x:Bind ViewModel.HasError, Mode=OneWay}"/>
 
-        <Grid x:Name="TopBar" VerticalAlignment="Top" Padding="12,8" ColumnSpacing="12" Background="#CC111111">
+        <Grid x:Name="TopBar" VerticalAlignment="Top" Padding="12,8" ColumnSpacing="12" Background="#CC111111" RequestedTheme="Dark">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -111,7 +111,7 @@
         </Grid>
 
         <Grid x:Name="BottomBar" VerticalAlignment="Bottom" Padding="16,8" ColumnSpacing="12"
-              Background="#CC111111">
+              Background="#CC111111" RequestedTheme="Dark">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
