@@ -278,7 +278,15 @@ public sealed class SqliteRepositoryTests : IAsyncLifetime
         Assert.False((await _repo.GetLibraryItemsAsync(TestContext.Current.CancellationToken)).Single().IsFavorite);
     }
 
+    [Fact]
+    public async Task Finds_a_comic_id_by_path_ignoring_case()
+    {
+        var comic = NewComic(@"D:\Comics\a.cbz");
+        await _repo.SaveComicAsync(comic, TestContext.Current.CancellationToken);
 
+        Assert.Equal(comic.Id, await _repo.FindComicIdAsync(@"d:\comics\A.CBZ", TestContext.Current.CancellationToken));
+        Assert.Equal(0, await _repo.FindComicIdAsync(@"D:\Comics\missing.cbz", TestContext.Current.CancellationToken));
+    }
 
 }
 

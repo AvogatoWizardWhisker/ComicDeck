@@ -146,5 +146,12 @@ namespace ComicDeck.Core.Data
             cancellationToken.ThrowIfCancellationRequested();
             await _db.ExecuteAsync("UPDATE Comic SET IsFavorite = ? WHERE Id = ?", isFavorite ? 1 : 0, comicId);
         }
+
+        public async Task<int> FindComicIdAsync(string filePath, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return await _db.ExecuteScalarAsync<int>(
+                "SELECT Id FROM Comic WHERE FilePath = ? COLLATE NOCASE LIMIT 1", filePath);
+        }
     }
 }

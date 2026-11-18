@@ -34,5 +34,8 @@ namespace ComicDeck.Core.Library
         Task<IReadOnlyList<ComicListItem>> GetContinueReadingAsync(int limit, CancellationToken cancellationToken = default);
 
         Task SetFavoriteAsync(int comicId, bool isFavorite, CancellationToken cancellationToken = default);
+
+        ///<summary> The library id for this file path (ignoring case), or 0 if it isn't in the library.</summary>
+        Task<int> FindComicIdAsync(string filePath, CancellationToken cancellationToken = default);
     }
 }
