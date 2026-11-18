@@ -36,11 +36,11 @@
             VerticalScrollBarVisibility="Auto"
             SizeChanged="Scroller_SizeChanged"
             Tapped="Scroller_Tapped"
-            DoubleTapped="Scroller_DoubleTapped"
-            PointerWheelChanged="Scroller_PointerWheelChanged">
+            DoubleTapped="Scroller_DoubleTapped">
             
             <!-- the outer star columns centre the pages when they are smaller than the viewport -->
-            <Grid x:Name="PageHost">
+            <Grid x:Name="PageHost" Background="Transparent"
+                  PointerWheelChanged="Scroller_PointerWheelChanged">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
