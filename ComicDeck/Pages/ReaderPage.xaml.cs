@@ -170,16 +170,16 @@ namespace ComicDeck.Pages
             switch (sender.Key)
             {
                 case VirtualKey.Down:
-                    await ViewModel.NextAsync();
+                    await AdvanceAsync(forward: true, fraction: 0.15);
                     break;
                 case VirtualKey.Up:
-                    await ViewModel.PreviousAsync();
+                    await AdvanceAsync(forward: false, fraction: 0.15);
                     break;
                 case VirtualKey.Right:
-                    await ViewModel.StepRightAsync();
+                    await AdvanceAsync(forward: !ViewModel.IsRightToLeft, fraction: 0.15);
                     break;
                 case VirtualKey.Left:
-                    await ViewModel.StepLeftAsync();
+                    await AdvanceAsync(forward: ViewModel.IsRightToLeft, fraction: 0.15);
                     break;
                 case VirtualKey.Space:
                 case VirtualKey.PageDown:
@@ -215,29 +215,40 @@ namespace ComicDeck.Pages
 
         // mouse
 
-        private long _lastWheelTurn;
         private bool _landAtBottom; // set while going back, so the previous page opens at its bottom
+        private long _lastWheelTurn;
 
         private async void Scroller_PointerWheelChanged(object sender, PointerRoutedEventArgs e)
         {
-            // Ctrl + wheel is zoom and Shift + wheel is horizontal scroll: leave both to the ScrollViewer
+            // Ctrl+wheel is zoom and Shift+wheel is horizontal scroll: leave both to the ScrollViewer.
             if (e.KeyModifiers.HasFlag(VirtualKeyModifiers.Control) ||
                 e.KeyModifiers.HasFlag(VirtualKeyModifiers.Shift)) return;
 
             var props = e.GetCurrentPoint(Scroller).Properties;
             if (props.IsHorizontalMouseWheel || props.MouseWheelDelta == 0) return;
 
+            e.Handled = true;   // the ScrollViewer must not scroll on its own
+
+            const double edge = 2;           // pixels of tolerance at the very top or bottom
+            const double pixelsPerNotch = 100;
+
             var forward = props.MouseWheelDelta < 0;
-            const double edge = 2; // pixels of tolerance at the very top or bottom
-
+            var offset = Scroller.VerticalOffset;
             var atEdge = forward
-                ? Scroller.ScrollableHeight - Scroller.VerticalOffset <= edge
-                : Scroller.VerticalOffset <= edge;
-            if (atEdge) return; // not at the edge yet: the ScrollViewer scrolls as usual
+                ? Scroller.ScrollableHeight - offset <= edge
+                : offset <= edge;
 
-            e.Handled = true;
+            if (!atEdge)
+            {
+                var distance = Math.Abs(props.MouseWheelDelta) / 120.0 * pixelsPerNotch;
+                var target = forward
+                    ? Math.Min(offset + distance, Scroller.ScrollableHeight)
+                    : Math.Max(offset - distance, 0);
+                Scroller.ChangeView(null, target, null, disableAnimation: true);
+                return;
+            }
 
-            // one flick sens many wheels evens, so allow only one page turn per short interval
+            // At the edge: turn the page, at most once per short interval.
             if (Environment.TickCount64 - _lastWheelTurn < 450) return;
             _lastWheelTurn = Environment.TickCount64;
 
@@ -255,28 +266,34 @@ namespace ComicDeck.Pages
             _lastWheelTurn = Environment.TickCount64;
         }
 
-        /// <summary> Space and Page Down scroll a tall page first, then turn the page at the bottom. </summary>
-        private async Task AdvanceAsync(bool forward)
+        /// <summary> Scrolls the page by <paramref name="fraction"/> of the viewport height. 
+        /// At the top or bottom edge, turns the page instead. Going back lands at the bottom of the previous page.
+        /// </summary>
+        private async Task AdvanceAsync(bool forward, double fraction = 0.9)
         {
-            var step = Scroller.ViewportHeight * 0.9;
+            const double edge = 4;   // pixels of tolerance at the very top or bottom
+            var step = Scroller.ViewportHeight * fraction;
 
             if (forward)
             {
-                if (Scroller.ScrollableHeight - Scroller.VerticalOffset > 4)
+                if (Scroller.ScrollableHeight - Scroller.VerticalOffset > edge)
                 {
-                    Scroller.ChangeView(null, Scroller.VerticalOffset + step, null);
+                    Scroller.ChangeView(null, Math.Min(Scroller.VerticalOffset + step, Scroller.ScrollableHeight), null);
                     return;
                 }
                 await ViewModel.NextAsync();
             }
             else
             {
-                if (Scroller.VerticalOffset > 4)
+                if (Scroller.VerticalOffset > edge)
                 {
-                    Scroller.ChangeView(null, Scroller.VerticalOffset - step, null);
+                    Scroller.ChangeView(null, Math.Max(Scroller.VerticalOffset - step, 0), null);
                     return;
                 }
-                await ViewModel.PreviousAsync();
+
+                _landAtBottom = true;
+                try { await ViewModel.PreviousAsync(); }
+                finally { _landAtBottom = false; }
             }
         }
 
