@@ -122,4 +122,7 @@ internal sealed class FakeComicRepository : IComicRepository
         if (comic is not null) comic.IsFavorite = isFavorite;
         return Task.CompletedTask;
     }
+
+    public Task<int> FindComicIdAsync(string filePath, CancellationToken ct = default) =>
+        Task.FromResult(Comics.FirstOrDefault(c => c.FilePath.Equals(filePath, StringComparison.OrdinalIgnoreCase))?.Id ?? 0);
 }

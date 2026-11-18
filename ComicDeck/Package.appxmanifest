@@ -43,6 +43,19 @@
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
+		    <Extensions>
+			    <uap:Extension Category="windows.fileTypeAssociation">
+				    <uap:FileTypeAssociation Name="comicbook">
+					    <uap:DisplayName>Comic book archive</uap:DisplayName>
+					    <uap:SupportedFileTypes>
+						    <uap:FileType>.cbz</uap:FileType>
+						    <uap:FileType>.cbr</uap:FileType>
+						    <uap:FileType>.cb7</uap:FileType>
+						    <uap:FileType>.cbt</uap:FileType>
+					    </uap:SupportedFileTypes>
+				    </uap:FileTypeAssociation>
+			    </uap:Extension>
+		    </Extensions>
     </Application>
   </Applications>
 

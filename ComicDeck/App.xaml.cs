@@ -1,9 +1,11 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
+using Microsoft.Windows.AppLifecycle;
 using ComicDeck.Core.Archives;
 using ComicDeck.Core.Data;
 using ComicDeck.Core.Library;
@@ -11,6 +13,7 @@ using ComicDeck.Core.Metadata;
 using ComicDeck.Services;
 using ComicDeck.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using Windows.Security.Cryptography.Core;
 
 namespace ComicDeck
 {
@@ -38,6 +41,22 @@ namespace ComicDeck
             CurrentWindow = _window;
             _window.Closed += async (_, _) => await database.DisposeAsync();
             _window.Activate();
+
+            if (GetLaunchFilePath() is { } openPath && _window is MainWindow main)
+            {
+                // low priority runs after the navigation view has made its first (Home) selection,
+                // so the reader isn't overwritten by it
+                main.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, async () => await main.OpenComicAsync(openPath));
+            }
+        }
+
+        private static string? GetLaunchFilePath()
+        {
+            var activiation = AppInstance.GetCurrent().GetActivatedEventArgs();
+            return activiation.Kind == ExtendedActivationKind.File
+                && activiation.Data is Windows.ApplicationModel.Activation.IFileActivatedEventArgs file
+                ? file.Files.FirstOrDefault()?.Path
+                : null;
         }
 
         private static IServiceProvider ConfigureServices(ComicDatabase database)
