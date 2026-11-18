@@ -13,6 +13,46 @@
         <KeyboardAccelerator Key="F" Modifiers="Control" Invoked="FocusSearch" />
     </Page.KeyboardAccelerators>
 
+    <Page.Resources>
+        <CollectionViewSource x:Name="GroupedSource" IsSourceGrouped="True"/>
+
+        <DataTemplate x:Key="ComicCardTemplate" x:DataType="vm:ComicItemViewModel">
+            <StackPanel Width="160" Margin="4" Spacing="6">
+                <StackPanel.ContextFlyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem Text="{x:Bind FavoriteMenuText, Mode=OneWay}" Tag="{x:Bind}" Click="Favorite_Click"/>
+                        <MenuFlyoutSeparator/>
+                        <MenuFlyoutItem Text="Mark as read" Tag="{x:Bind}" Click="MarkRead_Click"/>
+                        <MenuFlyoutItem Text="Mark as unread" Tag="{x:Bind}" Click="MarkUnread_Click"/>
+                    </MenuFlyout>
+                </StackPanel.ContextFlyout>
+                <Border Width="160" Height="240" CornerRadius="4"
+                        Background="{ThemeResource LayerFillColorDefaultBrush}">
+                    <Grid>
+                        <Image Source="{x:Bind Cover, Mode=OneWay}" Stretch="Uniform"/>
+                        <ProgressBar VerticalAlignment="Bottom" Maximum="100"
+                                     Value="{x:Bind ProgressPercent, Mode=OneWay}"
+                                     Visibility="{x:Bind ShowProgress, Mode=OneWay}"/>
+                        <Border Width="24" Height="24" CornerRadius="6" Margin="8"
+                                HorizontalAlignment="Right" VerticalAlignment="Top"
+                                Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                Visibility="{x:Bind IsCompleted, Mode=OneWay}">
+                            <FontIcon Glyph="&#xE73E;" FontSize="12"/>
+                        </Border>
+                        <FontIcon Glyph="&#xE735;" FontSize="18" Margin="8"
+                                  HorizontalAlignment="Left" VerticalAlignment="Top"
+                                  Foreground="Gold"
+                                  Visibility="{x:Bind IsFavorite, Mode=OneWay}"/>
+                    </Grid>
+                </Border>
+                <TextBlock Height="40" MaxLines="2" TextWrapping="Wrap" TextTrimming="CharacterEllipsis"
+                           Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind Title}"/>
+                <TextBlock Height="18" TextTrimming="CharacterEllipsis" Opacity="0.7"
+                           Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind Subtitle}"/>
+            </StackPanel>
+        </DataTemplate>
+    </Page.Resources>
+
     <Grid Padding="24,16,24,0" RowSpacing="12">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -55,6 +95,10 @@
                 <ComboBoxItem Content="Completed" Tag="Completed" />
                 <ComboBoxItem Content="Favorites" Tag="Favorites" />
             </ComboBox>
+
+            <Button Content="A–Z" Click="ShowAlphabet_Click"
+                    ToolTipService.ToolTip="Jump to a letter"
+                    Visibility="{x:Bind ViewModel.IsGrouped, Mode=OneWay}" />
         </StackPanel>
 
         <StackPanel Grid.Row="2" Spacing="6">
@@ -64,68 +108,68 @@
                          Visibility="{x:Bind ViewModel.IsScanning, Mode=OneWay}" />
         </StackPanel>
 
-        <GridView
-            x:Name="ComicGrid"
-            Grid.Row="3"
-            ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
-            SelectionMode="None"
-            IsItemClickEnabled="True"
-            ItemClick="ComicGrid_ItemClick"
-            ContainerContentChanging="ComicGrid_ContainerContentChanging">
-            <GridView.ItemTemplate>
-                <DataTemplate x:DataType="vm:ComicItemViewModel">
-                    <StackPanel Width="160" Margin="4" Spacing="6">
-                        <StackPanel.ContextFlyout>
-                            <MenuFlyout>
-                                <MenuFlyoutItem Text="{x:Bind FavoriteMenuText, Mode=OneWay}" Tag="{x:Bind}" Click="Favorite_Click"/>
-                                <MenuFlyoutItem Text="Mark as read" Tag="{x:Bind}" Click="MarkRead_Click" />
-                                <MenuFlyoutItem Text="Mark as unread" Tag="{x:Bind}" Click="MarkUnread_Click" />
-                            </MenuFlyout>
-                        </StackPanel.ContextFlyout>
-                        <Border Width="160" Height="240" CornerRadius="4"
-                                Background="{ThemeResource LayerFillColorDefaultBrush}">
-                            <Grid>
-                                <Image Source="{x:Bind Cover, Mode=OneWay}" Stretch="Uniform" />
-                                <ProgressBar VerticalAlignment="Bottom"
-                                             Maximum="100"
-                                             Value="{x:Bind ProgressPercent, Mode=OneWay}"
-                                             Visibility="{x:Bind ShowProgress, Mode=OneWay}" />
-                                <Border Width="24" Height="24" CornerRadius="12" Margin="6"
-                                        HorizontalAlignment="Right" VerticalAlignment="Top"
-                                        Background="{ThemeResource AccentFillColorDefaultBrush}"
-                                        Visibility="{x:Bind IsCompleted, Mode=OneWay}">
-                                    <FontIcon Glyph="&#xE73E;" FontSize="12" />
-                                </Border>
-                                <FontIcon Glyph="&#xE735;" FontSize="18" Margin="8" HorizontalAlignment="Left" VerticalAlignment="Top" Foreground="Gold" Visibility="{x:Bind IsFavorite, Mode=OneWay}"/>
+        <!-- Series and Title sorts: grouped by letter, with the jump list -->
+        <SemanticZoom x:Name="Zoom" Grid.Row="3"
+                      Visibility="{x:Bind ViewModel.IsGrouped, Mode=OneWay}"
+                      ViewChangeStarted="Zoom_ViewChangeStarted">
+            <SemanticZoom.ZoomedInView>
+                <GridView x:Name="GroupedGrid"
+                          ItemTemplate="{StaticResource ComicCardTemplate}"
+                          SelectionMode="None"
+                          IsItemClickEnabled="True"
+                          ItemClick="ComicGrid_ItemClick"
+                          ContainerContentChanging="ComicGrid_ContainerContentChanging">
+                    <GridView.GroupStyle>
+                        <GroupStyle HidesIfEmpty="True">
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate x:DataType="vm:ComicGroup">
+                                    <TextBlock Margin="4,12,4,4" Text="{x:Bind Key}"
+                                               Style="{StaticResource SubtitleTextBlockStyle}" />
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </GridView.GroupStyle>
+                </GridView>
+            </SemanticZoom.ZoomedInView>
+
+            <SemanticZoom.ZoomedOutView>
+                <GridView x:Name="AlphaGrid"
+                          SelectionMode="None"
+                          IsItemClickEnabled="True"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Padding="24"
+                          ContainerContentChanging="AlphaGrid_ContainerContentChanging">
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="vm:AlphaTile">
+                            <Grid Width="123" Height="30">
+                                <TextBlock Text="{x:Bind Key}" HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Style="{StaticResource SubtitleTextBlockStyle}" />
                             </Grid>
-                        </Border>
-                        <TextBlock Height="40" MaxLines="2" TextWrapping="Wrap"
-                                   TextTrimming="CharacterEllipsis"
-                                   Style="{StaticResource BodyStrongTextBlockStyle}"
-                                   Text="{x:Bind Title}" />
-                        <TextBlock Height="18" TextTrimming="CharacterEllipsis" Opacity="0.7"
-                                   Style="{StaticResource CaptionTextBlockStyle}"
-                                   Text="{x:Bind Subtitle}" />
-                    </StackPanel>
-                </DataTemplate>
-            </GridView.ItemTemplate>
-        </GridView>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </GridView>
+            </SemanticZoom.ZoomedOutView>
+        </SemanticZoom>
 
-        <TextBlock
-            Grid.Row="3"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Opacity="0.7"
-            Text="Your library is empty. Click “Add folder…” to choose where your comics are."
-            Visibility="{x:Bind ViewModel.ShowEmptyHint, Mode=OneWay}" />
+        <!-- Recently added / read: a plain grid -->
+        <GridView x:Name="FlatGrid" Grid.Row="3"
+                  ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
+                  ItemTemplate="{StaticResource ComicCardTemplate}"
+                  SelectionMode="None"
+                  IsItemClickEnabled="True"
+                  ItemClick="ComicGrid_ItemClick"
+                  ContainerContentChanging="ComicGrid_ContainerContentChanging"
+                  Visibility="{x:Bind ViewModel.IsFlat, Mode=OneWay}" />
 
-        <TextBlock
-            Grid.Row="3"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Opacity="0.7"
-            Text="No comics match your search or filter."
-            Visibility="{x:Bind ViewModel.ShowNoMatches, Mode=OneWay}" />
+        <TextBlock Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.7"
+                   Text="Your library is empty. Click “Add folder…” to choose where your comics are."
+                   Visibility="{x:Bind ViewModel.ShowEmptyHint, Mode=OneWay}" />
+
+        <TextBlock Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.7"
+                   Text="No comics match your search or filter."
+                   Visibility="{x:Bind ViewModel.ShowNoMatches, Mode=OneWay}" />
     </Grid>
 
 </Page>
