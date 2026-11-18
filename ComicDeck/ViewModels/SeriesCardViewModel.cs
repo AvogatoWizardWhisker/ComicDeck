@@ -44,7 +44,7 @@ namespace ComicDeck.ViewModels
             await Task.Yield(); // let the card finish the binding before the cover is set
 
             var fileName = await _thumbnails.GetOrCreateAsync(_summary.Cover);
-            if (fileName is null || _coverRequested) return;
+            if (fileName is null || !_coverRequested) return;
 
             Cover = new BitmapImage
             {
