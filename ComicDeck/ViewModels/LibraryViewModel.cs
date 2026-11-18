@@ -7,6 +7,7 @@ using ComicDeck.Core.Models;
 using ComicDeck.Core.Utilities;
 using ComicDeck.Services;
 using Microsoft.UI.Xaml.Media.Animation;
+using Microsoft.UI.Xaml.Controls;
 
 namespace ComicDeck.ViewModels
 {
@@ -39,6 +40,8 @@ namespace ComicDeck.ViewModels
             _time = time;
 
             Items = Array.Empty<ComicItemViewModel>();
+            Tiles = Array.Empty<AlphaTile>();
+            Groups = Array.Empty<ComicGroup>();
             Status = string.Empty;
             ScanMaximum = 1;
         }
@@ -61,6 +64,25 @@ namespace ComicDeck.ViewModels
 
         [ObservableProperty]
         public partial double ScanValue { get; set; }
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsFlat))]
+        public partial bool IsGrouped { get; set; }
+
+        [ObservableProperty]
+        public partial IReadOnlyList<AlphaTile> Tiles { get; set; }
+
+        [ObservableProperty]
+        public partial IReadOnlyList<ComicGroup> Groups { get; set; }
+
+        public bool IsFlat => !IsGrouped;
+
+        /// <summary> The jump-list tile for the group that contains this comic.</summary>
+        public AlphaTile? TileFor(ComicItemViewModel comic)
+        {
+            var key = Groups.FirstOrDefault(g => g.Contains(comic))?.Key;
+            return key is null ? null : Tiles.FirstOrDefault(t => t.Key == key);
+        }
 
         public bool IsIdle => !IsScanning;
         public bool ShowEmptyHint => _all.Count == 0 && !IsScanning;
@@ -106,19 +128,40 @@ namespace ComicDeck.ViewModels
         private async Task ApplyQueryAsync()
         {
             var version = ++_applyVersion;
-            var rows = _all;
+            var source = _all;
             var query = _query;
 
             // Sorting and building up to 10,000 view models doesn't belong on the UI thread.
-            var built = await Task.Run(() => LibraryQuery.Apply(rows, query)
-                .Select(r => new ComicItemViewModel(r, _thumbnails))
-                .ToList());
+            var built = await Task.Run(() =>
+            {
+                var rows = LibraryQuery.Apply(source, query);
+                var items = rows.Select(r => new ComicItemViewModel(r, _thumbnails)).ToList();
+
+                if (!LibraryGrouping.IsAlphabetical(query.Sort))
+                    return (Items: items, Groups: new List<ComicGroup>(), Tiles: new List<AlphaTile>(), Grouped: false);
+
+                var pairs = rows.Zip(items, (row, vm) => (Row: row, Vm: vm));
+                var groups = LibraryGrouping
+                    .Group(pairs, p => LibraryGrouping.KeyOf(p.Row, query.Sort), query.Reverse)
+                    .Select(g => new ComicGroup(g.Key, g.Items.Select(p => p.Vm)))
+                    .ToList();
+
+                var tiles = LibraryGrouping.AllKeys
+                    .Select(k => new AlphaTile(k, groups.FirstOrDefault(g => g.Key == k)?.FirstOrDefault()))
+                    .ToList();
+
+                return (Items: items, Groups: groups, Tiles: tiles, Grouped: true);
+            });
 
             if (version != _applyVersion) return;   // a newer query is already running
 
-            Items = built;
+            Items = built.Items;
+            Tiles = built.Tiles;
+            IsGrouped = built.Grouped;
+            Groups = built.Groups;   // last, because the page rebinds when this changes
+
             Status = _all.Count == 0 ? string.Empty
-                   : query.IsFiltered ? $"{built.Count} of {_all.Count} comics"
+                   : query.IsFiltered ? $"{built.Items.Count} of {_all.Count} comics"
                    : $"{_all.Count} comics";
         }
 
