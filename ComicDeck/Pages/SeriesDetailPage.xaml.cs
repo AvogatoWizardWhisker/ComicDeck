@@ -1,0 +1,57 @@
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Data;
+using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Navigation;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.Foundation;
+using Windows.Foundation.Collections;
+using ComicDeck.Services;
+using ComicDeck.ViewModels;
+using Microsoft.UI.Xaml.Automation;
+
+
+namespace ComicDeck.Pages
+{
+    public sealed partial class SeriesDetailPage : Page
+    {
+        public SeriesDetailViewModel ViewModel { get; } = App.GetService<SeriesDetailViewModel>();
+        private string? _series;
+        public SeriesDetailPage()
+        {
+            InitializeComponent();
+            Loaded += async (_, _) =>
+            {
+                if (_series is not null) await ViewModel.LoadAsync(_series);
+            };
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e) => _series = e.Parameter as string;
+
+        private void Continue_Click(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel.ContinurRequest is { } request)
+                Frame.Navigate(typeof(ReaderPage), request);
+        }
+
+        private void Issue_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            if (e.ClickedItem is ComicItemViewModel comic)
+                Frame.Navigate(typeof(ReaderPage), new ReaderRequest(comic.FilePath, comic.Id));
+        }
+
+        private void Issue_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        {
+            if (args.Item is not ComicItemViewModel comic) return;
+
+            if (args.InRecycleQueue) comic.UnloadCover();
+            else _ = comic.LoadCoverAsync();
+        }
+    }
+}

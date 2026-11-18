@@ -66,6 +66,8 @@ namespace ComicDeck
             services.AddTransient<LibraryViewModel>();
             services.AddSingleton<ILibraryScanner, LibraryScanner>();
             services.AddTransient<SettingsViewModel>();
+            services.AddTransient<SeriesViewModel>();
+            services.AddTransient<SeriesDetailViewModel>();
 
             return services.BuildServiceProvider();
 

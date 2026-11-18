@@ -17,6 +17,8 @@
   <ItemGroup>
     <None Remove="Pages\LibraryPage.xaml" />
     <None Remove="Pages\ReaderPage.xaml" />
+    <None Remove="Pages\SeriesDetailPage.xaml" />
+    <None Remove="Pages\SeriesPage.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -61,6 +63,16 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ComicDeck.Core\ComicDeck.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\SeriesDetailPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Pages\SeriesPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Page Update="Pages\LibraryPage.xaml">
