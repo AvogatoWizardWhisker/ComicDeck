@@ -138,11 +138,11 @@ Metadata priority:
 
 ```text
 ComicDeck/
-├── Pages
-├── ViewModels
-├── Services
+├── Assets
 ├── Helpers
-└── Assets
+├── Pages
+├── Services
+└── ViewModels
 
 ComicDeck.Core/
 ├── Archives
