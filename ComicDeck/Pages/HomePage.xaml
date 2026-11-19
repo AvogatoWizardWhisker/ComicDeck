@@ -72,8 +72,9 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <TextBlock Grid.Row="3" Opacity="0.7" TextWrapping="Wrap"
-                       Text="Comics you start reading will show up here."
-                       Visibility="{x:Bind ViewModel.ShowEmptyHint, Mode=OneWay}"/>
+        <TextBlock Grid.Row="0" Grid.RowSpan="4" HorizontalAlignment="Center" VerticalAlignment="Center"
+           Opacity="0.7" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="420"
+           Text="Comics you start reading will show up here."
+           Visibility="{x:Bind ViewModel.ShowEmptyHint, Mode=OneWay}" />
     </Grid>
 </Page>

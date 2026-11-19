@@ -49,11 +49,13 @@ namespace ComicDeck.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ShowEmptyHint))]
         [NotifyPropertyChangedFor(nameof(ShowNoMatches))]
+        [NotifyPropertyChangedFor(nameof(HasLibrary))]
         public partial IReadOnlyList<ComicItemViewModel> Items { get; set; }
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsIdle))]
         [NotifyPropertyChangedFor(nameof(ShowEmptyHint))]
+        [NotifyPropertyChangedFor(nameof(HasLibrary))]
         public partial bool IsScanning { get; set; }
 
         [ObservableProperty]
@@ -86,6 +88,7 @@ namespace ComicDeck.ViewModels
 
         public bool IsIdle => !IsScanning;
         public bool ShowEmptyHint => _all.Count == 0 && !IsScanning;
+        public bool HasLibrary => !ShowEmptyHint;
         public bool ShowNoMatches => _all.Count > 0 && Items.Count == 0;
 
         // loading, searching and sorting

@@ -36,9 +36,12 @@
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>
-        <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center"
-                   Opacity="0.7" TextWrapping="Wrap" MaxWidth="400"
-                   Text="No series yet. Comics are grouped by the series name in ComicInfo.xml or the file name."
-                   Visibility="{x:Bind ViewModel.ShowEmptyHint, Mode=OneWay}"/>
+        <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="8"
+            Visibility="{x:Bind ViewModel.ShowEmptyHint, Mode=OneWay}">
+            <TextBlock Style="{StaticResource TitleTextBlockStyle}" TextAlignment="Center"
+               Text="No series yet" />
+            <TextBlock Opacity="0.7" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="420"
+               Text="Comics are grouped by the series name in ComicInfo.xml or in the file name." />
+        </StackPanel>
     </Grid>
 </Page>
