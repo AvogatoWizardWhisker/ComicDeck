@@ -69,7 +69,6 @@
                 </StackPanel>
             </Button>
         </StackPanel>
-        <!---->
 
         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
             <AutoSuggestBox x:Name="SearchBox" Width="280" PlaceholderText="Search (Ctrl+F)"
