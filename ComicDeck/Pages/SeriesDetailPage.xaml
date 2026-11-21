@@ -36,7 +36,8 @@
                   ContainerContentChanging="Issue_ContainerContentChanging">
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="vm:ComicItemViewModel">
-                    <StackPanel Width="160" Margin="4" Spacing="6">
+                    <StackPanel Width="160" Margin="4" Spacing="6"
+                                ToolTipService.ToolTip="{x:Bind ToolTipText}">
                         <Border Width="160" Height="240" CornerRadius="4"
                                 Background="{ThemeResource LayerFillColorDefaultBrush}">
                             <Grid>

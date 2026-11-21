@@ -15,6 +15,8 @@ namespace ComicDeck.ViewModels
         private readonly CoverThumbnailService _thumbnails;
         private bool _coverRequested;
 
+        public string ToolTipText => $"{Name}{Environment.NewLine}{Summary}";
+
         public SeriesCardViewModel(SeriesSummary summary, CoverThumbnailService thumbnails)
         {
             _summary = summary;

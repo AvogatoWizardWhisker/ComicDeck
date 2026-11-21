@@ -57,8 +57,8 @@ public static class SeriesGrouping
     }
 
     private static IOrderedEnumerable<ComicListItem> IssueOrder(IEnumerable<ComicListItem> items) =>
-        items.OrderBy(i => i.Number ?? string.Empty, NaturalStringComparer.Instance)
-        .ThenBy(i => i.Volume ?? int.MaxValue)
+        items.OrderBy(i => i.Volume ?? int.MaxValue)
+        .ThenBy(i => i.Number ?? string.Empty, NaturalStringComparer.Instance)
         .ThenBy(i => i.DisplayTitle, NaturalStringComparer.Instance);
 
 

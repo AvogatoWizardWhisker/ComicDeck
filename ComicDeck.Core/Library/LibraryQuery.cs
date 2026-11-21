@@ -35,8 +35,8 @@ public sealed record LibraryQuery(string Search = "", LibrarySort Sort = Library
 
             _ => matching
             .OrderBy(i => SeriesSortKey(i), comparer)
-            .ThenBy(i => i.Number ?? string.Empty, comparer)
             .ThenBy(i => i.Volume ?? int.MaxValue)
+            .ThenBy(i => i.Number ?? string.Empty, comparer)
             .ThenBy(i => i.DisplayTitle, comparer)
         };
 
