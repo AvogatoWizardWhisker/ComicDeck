@@ -61,6 +61,16 @@ public static class SeriesGrouping
         .ThenBy(i => i.Number ?? string.Empty, NaturalStringComparer.Instance)
         .ThenBy(i => i.DisplayTitle, NaturalStringComparer.Instance);
 
+    ///<summary> The summary to shows: the Next issue's if it has one, else the first issue's that does.</summary>
+    public static string? PickSummary(
+        IReadOnlyList<ComicListItem> issuesInOrder, ComicListItem next, IReadOnlyDictionary<int, string> summaries)
+    {
+        if (summaries.TryGetValue(next.Id, out var s)) return s;
+        foreach (var issue in issuesInOrder)
+            if (summaries.TryGetValue(issue.Id, out s)) return s;
+        return null;
+    }
+
 
 
 
