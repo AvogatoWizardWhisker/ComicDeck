@@ -37,5 +37,8 @@ namespace ComicDeck.Core.Library
 
         ///<summary> The library id for this file path (ignoring case), or 0 if it isn't in the library.</summary>
         Task<int> FindComicIdAsync(string filePath, CancellationToken cancellationToken = default);
+
+        ///<summary> The summary text for each comic id that has one</summary>
+        Task<IReadOnlyDictionary<int, string>> GetSummariesAsync(IReadOnlyCollection<int> comicIds, CancellationToken cancellationToken = default);
     }
 }

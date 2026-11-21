@@ -126,4 +126,9 @@ internal sealed class FakeComicRepository : IComicRepository
 
     public Task<int> FindComicIdAsync(string filePath, CancellationToken ct = default) =>
         Task.FromResult(Comics.FirstOrDefault(c => c.FilePath.Equals(filePath, StringComparison.OrdinalIgnoreCase))?.Id ?? 0);
+
+    public Task<IReadOnlyDictionary<int, string>> GetSummariesAsync(
+        IReadOnlyCollection<int> comicIds, CancellationToken ct = default) =>
+        Task.FromResult<IReadOnlyDictionary<int, string>>(Comics.Where(c => comicIds.Contains(c.Id) && !string.IsNullOrWhiteSpace(c.Summary))
+            .ToDictionary(c => c.Id, c => c.Summary!));
 }

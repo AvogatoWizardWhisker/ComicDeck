@@ -36,7 +36,7 @@ namespace ComicDeck.Pages
 
         private void Continue_Click(object sender, RoutedEventArgs e)
         {
-            if (ViewModel.ContinurRequest is { } request)
+            if (ViewModel.ContinueRequest is { } request)
                 Frame.Navigate(typeof(ReaderPage), request);
         }
 

@@ -153,5 +153,18 @@ namespace ComicDeck.Core.Data
             return await _db.ExecuteScalarAsync<int>(
                 "SELECT Id FROM Comic WHERE FilePath = ? COLLATE NOCASE LIMIT 1", filePath);
         }
+
+        public async Task<IReadOnlyDictionary<int, string>> GetSummariesAsync(
+            IReadOnlyCollection<int> comicIds, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (comicIds.Count == 0) return new Dictionary<int, string>();
+
+            var ids = string.Join(',', comicIds); // integers only, safe to inline
+            var rows = await _db.QueryAsync<Comic>(
+                $"SELECT Id, Summary FROM Comic WHERE Id IN ({ids}) AND Summary IS NOT NULL AND Summary <> ''");
+
+            return rows.ToDictionary(c => c.Id, c => c.Summary!);
+        }
     }
 }
