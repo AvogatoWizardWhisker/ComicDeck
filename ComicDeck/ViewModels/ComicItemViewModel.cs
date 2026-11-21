@@ -27,7 +27,12 @@ namespace ComicDeck.ViewModels
         public string Title => _item.DisplayTitle;
 
         public string Subtitle =>
-            _item.SeriesName is null ? string.Empty : string.IsNullOrEmpty(_item.Number) ? _item.SeriesName : $"{_item.SeriesName} #{_item.Number}";
+            _item.SeriesName is null ? string.Empty
+            : !string.IsNullOrEmpty(_item.Number) ? $"{_item.SeriesName} #{_item.Number}"
+            : _item.Volume is int v ? $"{_item.SeriesName} · Vol. {v}"
+            : _item.SeriesName;
+        /*public string Subtitle =>
+            $"{_item.SeriesName} | N={_item.Number ?? "-"} | V={_item.Volume?.ToString() ?? "-"}";*/
 
         public bool ShowProgress => _item.Status == ReadStatus.InProgress && _item.PageCount > 1;
 
@@ -80,6 +85,17 @@ namespace ComicDeck.ViewModels
             _item.IsFavorite = isFavorite;
             OnPropertyChanged(nameof(isFavorite));
             OnPropertyChanged(nameof(FavoriteMenuText));
+        }
+
+        public string ToolTipText
+        {
+            get
+            {
+                var lines = new List<string> { Title };
+                if (!string.IsNullOrEmpty(Subtitle)) lines.Add(Subtitle);
+                lines.Add(Path.GetFileName(_item.FilePath));
+                return string.Join(Environment.NewLine, lines);
+            }
         }
 
     }

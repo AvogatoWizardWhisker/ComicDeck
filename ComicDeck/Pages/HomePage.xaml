@@ -43,7 +43,8 @@
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="vm:ComicItemViewModel">
-                    <StackPanel Width="160" Margin="4" Spacing="6">
+                    <StackPanel Width="160" Margin="4" Spacing="6"
+                                ToolTipService.ToolTip="{x:Bind ToolTipText}">
                         <StackPanel.ContextFlyout>
                             <MenuFlyout>
                                 <MenuFlyoutItem Text="{x:Bind FavoriteMenuText, Mode=OneWay}"

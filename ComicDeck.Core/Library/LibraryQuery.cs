@@ -34,7 +34,8 @@ public sealed record LibraryQuery(string Search = "", LibrarySort Sort = Library
             .ThenBy(i => i.DisplayTitle, comparer),
 
             _ => matching
-            .OrderBy(i => i.SeriesName ?? i.DisplayTitle, comparer)
+            .OrderBy(i => SeriesSortKey(i), comparer)
+            .ThenBy(i => i.Volume ?? int.MaxValue)
             .ThenBy(i => i.Number ?? string.Empty, comparer)
             .ThenBy(i => i.DisplayTitle, comparer)
         };
@@ -63,4 +64,7 @@ public sealed record LibraryQuery(string Search = "", LibrarySort Sort = Library
     }
 
     private static bool Has(string? field, string term) => field is not null && field.Contains(term, StringComparison.OrdinalIgnoreCase);
+
+    private static string SeriesSortKey(ComicListItem i) =>
+    i.SeriesName is null ? i.DisplayTitle : SeriesGrouping.KeyOf(i.SeriesName);
 }

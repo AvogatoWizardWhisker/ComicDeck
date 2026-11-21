@@ -23,6 +23,7 @@ namespace ComicDeck.Core.Library
         public ReadStatus Status { get; set; }
         public DateTime AddedUtc { get; set; }
         public DateTime? LastReadUtc { get; set; }
+        public int? Volume { get; set; }
 
         public string DisplayTitle => !string.IsNullOrWhiteSpace(Title) ? Title : Path.GetFileNameWithoutExtension(FilePath);
     }

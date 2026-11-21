@@ -92,6 +92,7 @@ internal sealed class FakeComicRepository : IComicRepository
                 Id = c.Id,
                 FilePath = c.FilePath,
                 Title = c.Title,
+                Volume = c.Volume,
                 SeriesName = series?.Name,
                 Number = c.Number,
                 PageCount = c.PageCount,
