@@ -3,23 +3,40 @@ using System.Collections.Generic;
 using System.Text;
 using ComicDeck.Core.Library;
 using ComicDeck.Core.Models;
+using SharpCompress.Common;
 
 namespace ComicDeck.Core.Tests
 {
     public class LibraryQueryTests
     {
-        private static ComicListItem Item(int id, string? series, string? number, string? title = null, ReadStatus status = ReadStatus.Unread, bool fav = false, int addedDay = 1, int? readDay = null) => new()
+        private static ComicListItem Item(int id, string? series, string? number, string? title = null, ReadStatus status = ReadStatus.Unread, bool fav = false, int addedDay = 1, int? readDay = null, int? volume = null) => new()
         {
             Id = id,
             FilePath = $@"D:\Comics\file{id}.cbz",
             SeriesName = series,
             Number = number,
+            Volume = volume,
             Title = title,
             Status = status,
             IsFavorite = fav,
             AddedUtc = new DateTime(2026, 11, addedDay, 0, 0, 0, DateTimeKind.Utc),
             LastReadUtc = readDay is int d ? new DateTime(2026, 11, d, 0, 0, 0, DateTimeKind.Utc) : null
         };
+
+        [Fact]
+        public void Volumes_sort_numerically_even_when_series_names_differ_by_punctuation()
+        {
+            var items = new[]
+            {
+                Item(1, "Sonic (2018-)", null, volume: 2),    // normal hyphen
+                Item(2, "Sonic (2018–)", null, volume: 1),    // en dash
+                Item(3, "Sonic (2018-)", null, volume: 10)
+            };
+
+            var ids = LibraryQuery.Apply(items, new LibraryQuery()).Select(i => i.Id);
+
+            Assert.Equal(new[] { 2, 1, 3 }, ids);   // volumes 1, 2, 10
+        }
 
         private static readonly ComicListItem[] Library =
         {

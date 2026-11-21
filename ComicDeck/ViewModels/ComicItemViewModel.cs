@@ -27,7 +27,10 @@ namespace ComicDeck.ViewModels
         public string Title => _item.DisplayTitle;
 
         public string Subtitle =>
-            _item.SeriesName is null ? string.Empty : string.IsNullOrEmpty(_item.Number) ? _item.SeriesName : $"{_item.SeriesName} #{_item.Number}";
+            _item.SeriesName is null ? string.Empty
+            : !string.IsNullOrEmpty(_item.Number) ? $"{_item.SeriesName} #{_item.Number}"
+            : _item.Volume is int v ? $"{_item.SeriesName} · Vol. {v}"
+            : _item.SeriesName;
 
         public bool ShowProgress => _item.Status == ReadStatus.InProgress && _item.PageCount > 1;
 
