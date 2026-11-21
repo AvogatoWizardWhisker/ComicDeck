@@ -9,13 +9,26 @@
     xmlns:vm="using:ComicDeck.ViewModels"
     mc:Ignorable="d">
 
-    <Grid Padding="24,16,24,0" RowSpacing="12">
+    <Grid Padding="24,16,24,0" RowSpacing="20">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid ColumnSpacing="24">
+        <BreadcrumbBar ItemsSource="{x:Bind ViewModel.Crumbs, Mode=OneWay}"
+                       ItemClicked="Breadcrumb_ItemClicked">
+            <BreadcrumbBar.Resources>
+                <x:Double x:Key="BreadcrumbBarChevronFontSize">20</x:Double>
+            </BreadcrumbBar.Resources>
+            <BreadcrumbBar.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                    <TextBlock Text="{x:Bind}" FontSize="30" FontWeight="SemiBold" HorizontalAlignment="Left"/>
+                </DataTemplate>
+            </BreadcrumbBar.ItemTemplate>
+        </BreadcrumbBar>
+
+        <Grid Grid.Row="1" ColumnSpacing="24">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -42,7 +55,7 @@
             </StackPanel>
         </Grid>
 
-        <GridView Grid.Row="1" ItemsSource="{x:Bind ViewModel.Issues, Mode=OneWay}"
+        <GridView Grid.Row="2" ItemsSource="{x:Bind ViewModel.Issues, Mode=OneWay}"
                   SelectionMode="None" IsItemClickEnabled="True"
                   ItemClick="Issue_ItemClick"
                   ContainerContentChanging="Issue_ContainerContentChanging">

@@ -53,5 +53,16 @@ namespace ComicDeck.Pages
             if (args.InRecycleQueue) comic.UnloadCover();
             else _ = comic.LoadCoverAsync();
         }
+
+        private void Breadcrumb_ItemClicked(BreadcrumbBar sender, BreadcrumbBarItemClickedEventArgs args)
+        {
+            if (args.Index != 0) return;   // the last item is the current page
+
+            // Go back if we came from the series list, so the back stack doesn't grow.
+            if (Frame.CanGoBack && Frame.BackStack.LastOrDefault()?.SourcePageType == typeof(SeriesPage))
+                Frame.GoBack();
+            else
+                Frame.Navigate(typeof(SeriesPage));
+        }
     }
 }

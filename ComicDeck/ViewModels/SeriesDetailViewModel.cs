@@ -27,7 +27,9 @@ namespace ComicDeck.ViewModels
             Summary = string.Empty; // no summary anywhere: fall back to facts we already have, so there is never an empty gap
         }
 
-        [ObservableProperty] public partial string Title { get; set; }
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(Crumbs))]
+        public partial string Title { get; set; }
         [ObservableProperty] public partial string Subtitle { get; set; }
         [ObservableProperty] public partial string ContinueText { get; set; }
         [ObservableProperty] public partial IReadOnlyList<ComicItemViewModel> Issues { get; set; }
@@ -39,6 +41,8 @@ namespace ComicDeck.ViewModels
         [ObservableProperty] public partial ImageSource? Cover { get; set; }
 
         public bool HasSummary => !string.IsNullOrWhiteSpace(Summary);
+
+        public IReadOnlyList<string> Crumbs => new[] { "Series", Title };
 
         public bool HasContinue => _next is not null;
         public ReaderRequest? ContinueRequest => _next is null ? null : new ReaderRequest(_next.FilePath, _next.Id);
