@@ -1,213 +1,136 @@
 # ComicDeck
 
-ComicDeck is a modern Windows comic book reader built with WinUI. It is designed to give users a clean, fast, and native reading experience for comic archives while organizing their library, tracking reading progress, and extracting metadata automatically.
+**ComicDeck** is a modern, fast, and native Windows comic book reader built with **WinUI 3** and **.NET 10**. Designed for comic enthusiasts with large digital collections, it combines a clean Mica-backdrop interface with smart archive handling, automatic metadata extraction, and a responsive SQLite-backed library.
 
-> [!Note]
->
-> ComicDeck is in **active development**, and its features, architecture, file formats, and user experience may change considerably between releases. Users should be aware that functionality may be incomplete, bugs may occur, and breaking changes can happen as development progresses.
+> \[!NOTE\]
+> ComicDeck is currently in **active development**. Features, database schemas, and user interfaces may evolve between releases.
 
-## Core Features
+## ✨ Features
 
-### Reading Experience
+### 📖 Modern Reader Experience
 
-- Native WinUI interface for Windows
-- Reads comic archive files directly from disk
-- Fast page navigation and layout handling
-- Support for single-page and double-page reading modes
-- Fit modes for page sizing and zooming
-- Right-to-left reading support for applicable titles
+* **Multiple Reading Modes:** Switch seamlessly between **Single-Page** and **Double-Page Spread** views (automatically keeping covers and wide landscape spreads standalone).
 
-### Library Management
+* **Flexible Fit & Zoom:** Choose between *Fit Page*, *Fit Width*, *Fit Height*, or *Original Size*, with smooth mouse-wheel/touchpad zoom and double-tap zoom.
 
-- Scan folders for comic archives
-- Track comics in a local SQLite database
-- Keep reading progress, favorites, and completion state
-- Search, filter, and sort comics in the library
-- Support for adding and rescanning library folders
+* **Manga & RTL Support:** Native Right-to-Left reading direction that automatically activates based on `ComicInfo.xml` metadata or can be toggled manually.
 
-### Metadata Support
+* **Smart Memory & Caching:** Asynchronous page preloading (`PageCache`) with viewport-aware decode sizing keeps page turns instant while minimizing memory usage.
 
-- Reads metadata from `ComicInfo.xml`
-- Falls back to filename-based detection when metadata is missing
-- Merges metadata from multiple sources
-- Automatically detects page counts from archive contents
-- Handles missing or corrupted metadata gracefully
+* **Distraction-Free UI:** Auto-hiding top/bottom HUD overlays, full-screen mode (`F11`), drag-and-drop file opening, and Windows file-type associations (`.cbz`, `.cbr`, `.cb7`, `.cbt`).
 
-### Filename Parsing
+### 📚 Library & Series Management
 
-ComicDeck can extract metadata from common comic naming conventions, including:
+* **Multi-Folder Watching:** Add multiple root directories and recursively scan them for comic archives without blocking the UI.
 
-```text
-Batman 001 (2016)
-Saga Vol. 3
-Amazing Spider-Man 025 - Hunted Part 1
-Invincible 144 (of 144)
+* **Automatic Series Grouping:** Intelligently groups issues into series (normalizing punctuation and casing) with a dedicated Series view and "Continue Reading" next-issue tracking.
+
+* **Search, Filter & Sort:** Instant debounced search (`Ctrl+F`) across titles, series, issue numbers, and filenames. Filter by *Unread*, *In Progress*, *Completed*, or *Favorites*, and sort by *Series*, *Title*, *Recently Added*, or *Recently Read* with an A–Z SemanticZoom jump list.
+
+* **Progress Persistence:** Automatically saves your current page, completion status, and favorites in a local SQLite database.
+
+* **On-Demand Cover Thumbnails:** Generates and caches resized JPEG cover thumbnails locally for smooth virtualized grid scrolling.
+
+### 🏷️ Metadata & Archive Engine
+
+* **Magic-Byte Format Detection:** Identifies `.cbz` (ZIP), `.cbr` (RAR4/RAR5), `.cb7` (7z), and `.cbt` (TAR) by file header bytes rather than trusting file extensions alone.
+
+* **Solid Archive Optimization:** Automatically extracts solid RAR/7z archives to a temporary background cache on first read so jumping to later pages is instantaneous.
+
+* **Natural Page Sorting:** Sorts pages naturally (`page2.jpg` before `page10.jpg`) while filtering out OS junk files (`__MACOSX`, `.DS_Store`, `Thumbs.db`).
+
+* **Hybrid Metadata Pipeline:** Parses ComicRack-standard `ComicInfo.xml` files (with XXE protection) and falls back to smart regex filename parsing for missing fields.
+
+## ⌨️ Reader Keyboard Shortcuts
+
+| Key | Action | 
+| ----- | ----- | 
+| `Left` / `Right` | Step page left or right (respects LTR/RTL direction) | 
+| `Up` / `Down` | Scroll vertically; turns page at top/bottom edge | 
+| `Space` / `Page Down` | Advance viewport or turn to next page | 
+| `Page Up` | Scroll up or turn to previous page | 
+| `Home` / `End` | Jump to first or last page | 
+| `D` | Toggle Double-Page Spread mode | 
+| `R` | Toggle Left-to-Right / Right-to-Left reading direction | 
+| `F` | Cycle through Fit modes | 
+| `F11` | Toggle Full-Screen mode | 
+| `Esc` | Exit Full-Screen or return to library | 
+
+## 🏗️ Architecture & Project Structure
+
+ComicDeck separates pure domain logic from the Windows UI layer so that archive parsing, metadata extraction, and database queries remain fast and thoroughly unit-tested:
+
 ```
-
-### Detected information may include
-
-- Series name
-- Issue number
-- Issue title
-- Volume number
-- Publication year
-- Total issue count
-
-### Supported File Formats
-
-ComicDeck supports the following comic archive formats:
-
-- ZIP (.cbz)
-- RAR (.cbr)
-- 7z (.cb7)
-- TAR (.cbt)
-
-The archive type is detected automatically, and the app reads pages from supported comic files.
-
----
-
-## Supported Metadata Sources
-
-### ComicInfo.xml
-
-When available, ComicDeck reads metadata from:
-
-```text
-ComicInfo.xml
-```
-
-Common fields include:
-
-- Title
-- Series
-- Number
-- Volume
-- Year
-- Page count
-- Publisher and other metadata values
-
-### Filename Metadata
-
-If embedded metadata is missing or incomplete, ComicDeck automatically extracts information from the comic filename.
-
-Example:
-
-```text
-Saga 054 (2018) (Digital) (Zone-Empire).cbz
-```
-
-Produces:
-
-```text
-Series: Saga
-Number: 54
-Year: 2018
-```
-
----
-
-## Architecture
-
-Current metadata flow:
-
-```text
-Archive
- ├── ComicInfo.xml
- └── Filename
-
-        │
-        ▼
-
- MetadataService
-        │
-        ▼
-
- ComicMetadata
-```
-
-Metadata priority:
-
-1. `ComicInfo.xml`
-2. Filename parser fallback
-3. Archive-derived page count
-
----
-
-## Project Structure
-
-```text
 ComicDeck/
-├── Assets
-├── Helpers
-├── Pages
-├── Services
-└── ViewModels
-
-ComicDeck.Core/
-├── Archives
-├── Data
-├── Library
-├── Metadata
-├── Models
-└── Utilities
-
-ComicDeck.Core.Tests/
+├── ComicDeck/                  # WinUI 3 Desktop Application (net10.0-windows)
+│   ├── Assets/                 # App icons, splash screens, and tile logos
+│   ├── Helpers/                # Win32 interop helpers (FileOpenPicker, FolderPicker)
+│   ├── Pages/                  # XAML views (Home, Library, Series, SeriesDetail, Reader, Settings)
+│   ├── Services/               # UI-layer services (PageCache, PageImageLoader, CoverThumbnailService, ThemeService)
+│   └── ViewModels/             # MVVM ViewModels powered by CommunityToolkit.Mvvm
+│
+├── ComicDeck.Core/             # Core Class Library (net10.0, zero UI dependencies)
+│   ├── Archives/               # IComicArchive, ZipComicArchive, SharpCompressComicArchive, FormatDetector
+│   ├── Data/                   # SQLite connection setup and repository implementations
+│   ├── Library/                # LibraryScanner, SeriesGrouping, LibraryQuery, LibraryGrouping
+│   ├── Metadata/               # ComicInfoParser, FileNameParser, MetadataService
+│   ├── Models/                 # Domain entities (Comic, Series, ReadingProgress, FitMode, etc.)
+│   └── Utilities/              # NaturalStringComparer, SpreadPlanner, DecodeSizing
+│
+└── ComicDeck.Core.Tests/       # xUnit v3 Test Suite
 
 ```
 
----
+## 🚀 Getting Started
 
-## Getting started
+### Prerequisites
 
-You first need to install an IDE (Integrated Development Environment). Preferably Visual Studio 2026 or Visual Studio Code. You can download them [in the following link](https://visualstudio.microsoft.com/downloads/). You also need to download and install the latest version of [.NET SDK](https://dotnet.microsoft.com/en-us/download), as well as [git](https://git-scm.com/downloads).
+* **OS:** Windows 10 (version 1809 / build 17763) or Windows 11
 
-To run the develop this project, follow these steps
+* **SDK:** [.NET 10 SDK](https://dotnet.microsoft.com/download)
 
-- Clone the repository to your prefered directory: `git clone https://github.com/AvogatoWizardWhisker/ComicDeck.git` then open it with `cd ComicDeck`.
-- Build and run the project with the dotnet command `dotnet build && dotnet run`.
+* **IDE:** [Visual Studio 2022 / 2026](https://visualstudio.microsoft.com/) with the **Windows application development** workload (Windows App SDK) installed.
 
-## Ressources
+### Building and Running
 
-This project has been built with:
+1. **Clone the repository:**
 
-- [SharpCompress](https://github.com/adamhathcock/sharpcompress)
-- [sqlite-net-pcl](https://github.com/praeclarum/sqlite-net)
-- [Communitytoolkit.MVVM](https://github.com/CommunityToolkit/dotnet)
+   ```bash
+   git clone https://github.com/AvogatoWizardWhisker/ComicDeck.git
+   cd ComicDeck
+   ```
 
-## Development Status
+2. **Restore and build the solution:**
 
-Current areas of focus:
+   ```bash
+   dotnet build ComicDeck.slnx
+   ```
 
-- Archive handling improvements
-- Metadata extraction and validation
-- Reader UI and navigation
-- Library management
-- Performance optimization
-- Automated testing
+3. **Run the application:**
+   Open `ComicDeck.slnx` in Visual Studio, select the `ComicDeck (Package)` launch profile, and press `F5` (or run via CLI with `dotnet run --project ComicDeck/ComicDeck.csproj`).
 
-Planned features may include:
+4. **Run the unit tests:**
 
-- Library organization
-- Search and filtering
-- Reading progress tracking
-- Thumbnail generation
-- Additional metadata providers
-- Enhanced reader customization
+   ```bash
+   dotnet test ComicDeck.Core.Tests/ComicDeck.Core.Tests.csproj
+   ```
 
----
+## 🛠️ Built With
 
-## Contributing
+* [**Windows App SDK & WinUI 3**](https://github.com/microsoft/WindowsAppSDK) — Native Fluent Design UI, Mica backdrop, and hardware-accelerated image decoding.
 
-Contributions, bug reports, and feature suggestions are welcome.
+* [**CommunityToolkit.Mvvm**](https://github.com/CommunityToolkit/dotnet) — Source-generated observable properties and MVVM architecture.
 
-Please note that the project is still evolving, so it is subject to change.
+* [**SharpCompress**](https://github.com/adamhathcock/sharpcompress) — Multi-format archive extraction for `.cbr`, `.cb7`, and `.cbt`.
 
----
+* [**sqlite-net-pcl**](https://github.com/praeclarum/sqlite-net) — Lightweight local SQLite database for library indexing and reading progress.
 
-## License
+* [**xUnit v3**](https://xunit.net/) — Unit testing framework for `ComicDeck.Core`.
 
-This project is licensed under the [MIT license](https://github.com/AvogatoWizardWhisker/ComicDeck?tab=MIT-1-ov-file).
+## 🤝 Contributing
 
----
+Contributions, bug reports, and feature suggestions are welcome! Feel free to open an issue or submit a pull request on GitHub.
 
-**ComicDeck is an active work-in-progress project focused on building a fast, modern, and metadata-aware comic reading experience for Windows.**
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE.txt) file for details.
