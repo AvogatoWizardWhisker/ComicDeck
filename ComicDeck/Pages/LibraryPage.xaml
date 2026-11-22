@@ -19,11 +19,23 @@
                             ToolTipService.ToolTip="{x:Bind ToolTipText}">
                     <StackPanel.ContextFlyout>
                         <MenuFlyout>
-                            <MenuFlyoutItem Text="{x:Bind FavoriteMenuText, Mode=OneWay}" Tag="{x:Bind}" Click="Favorite_Click"/>
-                            <MenuFlyoutSeparator/>
-                            <MenuFlyoutItem Text="Mark as read" Tag="{x:Bind}" Click="MarkRead_Click"/>
-                            <MenuFlyoutItem Text="Mark as unread" Tag="{x:Bind}" Click="MarkUnread_Click"/>
-                        </MenuFlyout>
+                        <MenuFlyoutItem Text="{x:Bind FavoriteMenuText, Mode=OneWay}" Tag="{x:Bind}" Click="Favorite_Click">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="{x:Bind FavoriteMenuGlyph, Mode=OneWay}"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutSeparator/>
+                        <MenuFlyoutItem Text="Mark as read" Tag="{x:Bind}" Click="MarkRead_Click">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xE890;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                        <MenuFlyoutItem Text="Mark as unread" Tag="{x:Bind}" Click="MarkUnread_Click">
+                            <MenuFlyoutItem.Icon>
+                                <FontIcon Glyph="&#xED1A;"/>
+                            </MenuFlyoutItem.Icon>
+                        </MenuFlyoutItem>
+                    </MenuFlyout>
                     </StackPanel.ContextFlyout>
                     <Border Width="160" Height="240" CornerRadius="4"
                             Background="{ThemeResource LayerFillColorDefaultBrush}">

@@ -7,6 +7,7 @@ using ComicDeck.Core.Models;
 using ComicDeck.Services;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using System.Runtime.CompilerServices;
 
 namespace ComicDeck.ViewModels
 {
@@ -79,6 +80,7 @@ namespace ComicDeck.ViewModels
 
         public bool IsFavorite => _item.IsFavorite;
         public string FavoriteMenuText => _item.IsFavorite ? "Remove from favorites" : "Add to favorites";
+        public string FavoriteMenuGlyph => _item.IsFavorite ? "\uE8D9" : "\uE734";
 
         public void ApplyFavorite(bool isFavorite)
         {
