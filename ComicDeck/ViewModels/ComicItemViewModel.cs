@@ -26,7 +26,7 @@ namespace ComicDeck.ViewModels
         public string FilePath => _item.FilePath;
         public string Title => _item.DisplayTitle;
 
-        public string Subtitle =>
+                public string Subtitle =>
             _item.SeriesName is null ? string.Empty
             : !string.IsNullOrEmpty(_item.Number) ? $"{_item.SeriesName} #{_item.Number}"
             : _item.Volume is int v ? $"{_item.SeriesName} · Vol. {v}"
