@@ -101,10 +101,12 @@ public sealed partial class ReaderViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(DirectionText))]
+    [NotifyPropertyChangedFor(nameof(DirectionGlyph))]
     public partial bool IsRightToLeft { get; set; }
 
     public bool HasError => ErrorMessage is not null;
     public string DirectionText => IsRightToLeft ? "Right to left" : "Left to right";
+    public string DirectionGlyph => IsRightToLeft ? "\uE72A" : "\uE72B";
 
     public string PageText =>
         PageCount == 0 ? string.Empty

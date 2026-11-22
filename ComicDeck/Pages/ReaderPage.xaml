@@ -98,14 +98,27 @@
                     </DropDownButton.Flyout>
                 </DropDownButton>
 
-                <ToggleButton x:Name="DoubleToggle" Content="Two pages"
+                <ToggleButton x:Name="DoubleToggle"
                               IsChecked="{x:Bind ViewModel.IsDoublePage, Mode=OneWay}"
-                              Click="Double_Click"/>
+                              Click="Double_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE89A;" FontSize="18"/>
+                        <TextBlock Text="Two Pages"/>
+                    </StackPanel>
+                </ToggleButton>
 
-                <Button Content="{x:Bind ViewModel.DirectionText, Mode=OneWay}" Click="Direction_Click"/>
+                <Button Click="Direction_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="{x:Bind ViewModel.DirectionGlyph, Mode=OneWay}" FontSize="18"/>
+                        <TextBlock Text="{x:Bind ViewModel.DirectionText, Mode=OneWay}"/>
+                    </StackPanel>
+                 </Button>
 
-                <Button Click="Fullscreen_Click" AutomationProperties.Name="Full screen">
-                    <FontIcon Glyph="&#xE740;"/>
+                <Button Click="Fullscreen_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE740;" FontSize="18"/>
+                        <TextBlock Text="Fullscreen"/>
+                    </StackPanel>
                 </Button>
             </StackPanel>
         </Grid>
