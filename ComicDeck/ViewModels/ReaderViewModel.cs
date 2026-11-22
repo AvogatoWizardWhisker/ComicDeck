@@ -106,7 +106,7 @@ public sealed partial class ReaderViewModel : ObservableObject, IDisposable
 
     public bool HasError => ErrorMessage is not null;
     public string DirectionText => IsRightToLeft ? "Right to left" : "Left to right";
-    public string DirectionGlyph => IsRightToLeft ? "\uE72A" : "\uE72B";
+    public string DirectionGlyph => IsRightToLeft ? "\uE72B" : "\uE72A";
 
     public string PageText =>
         PageCount == 0 ? string.Empty
