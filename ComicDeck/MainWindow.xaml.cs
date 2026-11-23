@@ -20,6 +20,8 @@ namespace ComicDeck
             SetTitleBar(AppTitleBar);
             AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
             AppWindow.SetIcon("Assets/AppIcon.ico");
+
+            new WindowStateService().Attach(AppWindow);
         }
 
         private void TitleBar_PaneToggleRequested(TitleBar sender, object args)
