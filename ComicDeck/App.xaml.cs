@@ -28,6 +28,16 @@ namespace ComicDeck
         public App()
         {
             InitializeComponent();
+
+            UnhandledException += (_, e) =>
+            {
+                try
+                {
+                    File.AppendAllText(Path.Combine(AppPaths.DataFolder, "crash.log"),
+                        $"{DateTime.Now:0}\n{e.Exception}\n\n");
+                }
+                catch (Exception) { }
+            };
         }
 
         protected override async void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
