@@ -16,10 +16,13 @@ namespace ComicDeck.ViewModels
         private readonly CoverThumbnailService _thumbnails;
         private ComicListItem? _next;
 
-        public SeriesDetailViewModel(IComicRepository comics, CoverThumbnailService thumbnails)
+        private readonly TimeProvider _time;
+
+        public SeriesDetailViewModel(IComicRepository comics, CoverThumbnailService thumbnails, TimeProvider time)
         {
             _comics = comics;
             _thumbnails = thumbnails;
+            _time = time;
             Title = string.Empty;
             Subtitle = string.Empty;
             ContinueText = string.Empty;
@@ -93,6 +96,28 @@ namespace ComicDeck.ViewModels
             }
 
             OnPropertyChanged(nameof(HasContinue));
+        }
+
+        public async Task SetReadAsync(ComicItemViewModel comic, bool read)
+        {
+            var progress = await _comics.GetProgressAsync(comic.Id) ?? new ReadingProgress { ComicId = comic.Id };
+            var now = _time.GetUtcNow().UtcDateTime;
+
+            if (read) progress.MarkCompleted(comic.PageCount, now);
+            else progress.MarkUnread();
+
+            await _comics.SaveProgressAsync(progress);
+            comic.ApplyProgress(progress.Status, progress.CurrentPage);
+        }
+
+        ///<summary> marks every issue in the series read or unread</summary>
+        public async Task SetAllReadAsync(bool read)
+        {
+            foreach (var comic in Issues)
+                await SetReadAsync(comic, read);
+
+            // the subtitle and button depend on the counts, so reload them
+            await LoadAsync(Title);
         }
     }
 }

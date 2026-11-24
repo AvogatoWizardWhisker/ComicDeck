@@ -64,5 +64,23 @@ namespace ComicDeck.Pages
             else
                 Frame.Navigate(typeof(SeriesPage));
         }
+
+        private async void MarkRead_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is ComicItemViewModel comic)
+                await ViewModel.SetReadAsync(comic, read: true);
+        }
+
+        private async void MarkUnread_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.Tag is ComicItemViewModel comic)
+                await ViewModel.SetReadAsync(comic, read:false);
+        }
+
+        private async void MarkAllRead_Click(object sender, RoutedEventArgs e) =>
+            await ViewModel.SetAllReadAsync(true);
+
+        private async void MarkAllUnread_Click(object sender, RoutedEventArgs e) =>
+            await ViewModel.SetAllReadAsync(false);
     }
 }
