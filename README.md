@@ -134,3 +134,5 @@ Contributions, bug reports, and feature suggestions are welcome! Feel free to op
 ## 📄 License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE.txt) file for details.
+
+Third-party dependency licenses and notices are listed in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).

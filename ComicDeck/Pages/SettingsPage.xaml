@@ -115,9 +115,12 @@
 
                 <StackPanel Spacing="16">
                     <StackPanel Spacing="4">
-                        <TextBlock Text="Source code" />
-                        <HyperlinkButton Padding="0" Content="github.com/AvogatoWiazrdWhisker/ComicDeck"
+                        <HyperlinkButton Padding="1" Content="Source code"
                              NavigateUri="https://github.com/AvogatoWizardWhisker/ComicDeck" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="4">
+                        <HyperlinkButton Padding="0" Content="Third-party notices" Click="ThirdPartyNotices_Click"/>
                     </StackPanel>
 
                     <StackPanel Spacing="4">

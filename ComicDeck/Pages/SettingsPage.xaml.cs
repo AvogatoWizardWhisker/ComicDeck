@@ -72,5 +72,42 @@ namespace ComicDeck.Pages
             }
         }
 
+        private async void ThirdPartyNotices_Click(object sender, RoutedEventArgs e)
+        {
+            string text;
+            try
+            {
+                var path = Path.Combine(Package.Current.InstalledLocation.Path, "Assets", "THIRD-PARTY-NOTICES.md");
+                text = await File.ReadAllTextAsync(path);
+            }
+            catch (Exception)
+            {
+                text = "The notice file couldn't be loaded. See THIRD-PARTY-NOTICES.md in the project repository";
+            }
+
+            var dialog = new ContentDialog
+            {
+                XamlRoot = XamlRoot,
+                Title = "Third-party notices",
+                CloseButtonText = "Close",
+                DefaultButton = ContentDialogButton.Close,
+                Content = new ScrollViewer
+                {
+                    MaxHeight = 480,
+                    MaxWidth = 900,
+                    Content = new TextBlock
+                    {
+                        Text = text,
+                        TextWrapping = TextWrapping.Wrap,
+                        IsTextSelectionEnabled = true,
+                        FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"),
+                        FontSize = 12
+                    }
+                }
+            };
+
+            await dialog.ShowAsync();
+        }
+
     }
 }
