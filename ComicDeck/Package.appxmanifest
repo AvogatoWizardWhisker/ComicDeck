@@ -11,7 +11,7 @@
   <Identity
     Name="002F6A3E-CE74-40AC-8356-C9B028C2E917"
     Publisher="CN=SolusGameolus"
-    Version="1.0.0.0" />
+    Version="1.0.1.0" />
 
   <mp:PhoneIdentity PhoneProductId="002F6A3E-CE74-40AC-8356-C9B028C2E917" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
